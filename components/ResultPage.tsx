@@ -1,11 +1,12 @@
+'use client';
+
 import { useState } from 'react';
 import { Download, Copy, Upload, Home, Check } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-interface ResultPageProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function ResultPage({ onNavigate }: ResultPageProps) {
+export default function ResultPage() {
+  const router = useRouter();
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -33,7 +34,7 @@ The Echo`;
   const handleSubmit = () => {
     setShowSubmitModal(false);
     setTimeout(() => {
-      onNavigate('exhibition');
+      router.push('/exhibition');
     }, 500);
   };
 
@@ -85,20 +86,20 @@ The Echo`;
         </div>
 
         <div className="flex justify-center gap-4">
-          <button
-            onClick={() => onNavigate('write')}
+          <Link
+            href="/write"
             className="text-gray-400 hover:text-white transition-colors"
           >
             Write Another Letter
-          </button>
+          </Link>
           <span className="text-gray-600">•</span>
-          <button
-            onClick={() => onNavigate('home')}
+          <Link
+            href="/"
             className="text-gray-400 hover:text-white transition-colors flex items-center gap-2"
           >
             <Home size={16} />
             Back to Home
-          </button>
+          </Link>
         </div>
       </div>
 

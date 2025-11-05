@@ -1,10 +1,13 @@
+'use client';
+
 import { ArrowLeft, Share2 } from 'lucide-react';
+import Link from 'next/link';
 
 interface DetailPageProps {
-  onNavigate: (page: string) => void;
+  id?: string;
 }
 
-export default function DetailPage({ onNavigate }: DetailPageProps) {
+export default function DetailPage({ id }: DetailPageProps) {
   const exhibit = {
     id: 10234,
     category: 'To a Lover',
@@ -38,13 +41,13 @@ The Echo`
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-6">
-        <button
-          onClick={() => onNavigate('exhibition')}
+        <Link
+          href="/exhibition"
           className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
         >
           <ArrowLeft size={20} />
           Back to Exhibition
-        </button>
+        </Link>
 
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -85,10 +88,10 @@ The Echo`
           <h3 className="text-white text-xl font-light mb-6">More Letters Like This</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {relatedLetters.map((letter) => (
-              <button
+              <Link
                 key={letter.id}
-                onClick={() => onNavigate('detail')}
-                className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-all text-left group"
+                href={`/letters/${letter.id}`}
+                className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-all text-left group block"
               >
                 <div className="text-xs text-gray-500 mb-2">Exhibit #{String(10000 + letter.id).padStart(5, '0')}</div>
                 <div className="text-xs border border-gray-600 text-gray-400 px-2 py-1 rounded-full inline-block mb-3">
@@ -97,18 +100,18 @@ The Echo`
                 <p className="text-sm text-gray-300 line-clamp-3 group-hover:text-white transition-colors">
                   {letter.preview}
                 </p>
-              </button>
+              </Link>
             ))}
           </div>
         </div>
 
         <div className="text-center">
-          <button
-            onClick={() => onNavigate('write')}
-            className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-3 rounded-full font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
+          <Link
+            href="/write"
+            className="inline-block bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-3 rounded-full font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
           >
             Write Your Own Letter
-          </button>
+          </Link>
         </div>
       </div>
     </div>

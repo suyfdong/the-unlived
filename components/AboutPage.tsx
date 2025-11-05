@@ -1,10 +1,9 @@
+'use client';
+
 import { Heart, Lock, Sparkles, BookOpen } from 'lucide-react';
+import Link from 'next/link';
 
-interface AboutPageProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function AboutPage({ onNavigate }: AboutPageProps) {
+export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-6">
@@ -122,12 +121,13 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           </div>
 
           <div>
-            <button
-              onClick={() => onNavigate('write')}
-              className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-full font-medium text-lg hover:shadow-2xl hover:shadow-cyan-500/50 transition-all"
-            >
-              Start Your Letter
-            </button>
+            <Link href="/write">
+              <button
+                className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-8 py-4 rounded-full font-medium text-lg hover:shadow-2xl hover:shadow-cyan-500/50 transition-all"
+              >
+                Start Your Letter
+              </button>
+            </Link>
           </div>
 
           <p className="text-gray-500 text-sm max-w-md mx-auto">

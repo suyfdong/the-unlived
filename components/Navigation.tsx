@@ -1,12 +1,12 @@
+'use client';
+
 import { Menu } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-interface NavigationProps {
-  onNavigate: (page: string) => void;
-  currentPage: string;
-}
-
-export default function Navigation({ onNavigate, currentPage }: NavigationProps) {
+export default function Navigation() {
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
@@ -25,49 +25,49 @@ export default function Navigation({ onNavigate, currentPage }: NavigationProps)
     }`}>
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <button
-            onClick={() => onNavigate('home')}
+          <Link
+            href="/"
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
           >
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center">
               <span className="text-black font-bold text-xl">U</span>
             </div>
             <span className="text-white text-xl font-light tracking-wider">The Unlived</span>
-          </button>
+          </Link>
 
           <div className="hidden md:flex items-center gap-8">
-            <button
-              onClick={() => onNavigate('home')}
+            <Link
+              href="/"
               className={`text-sm transition-colors ${
-                currentPage === 'home' ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
+                pathname === '/' ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
               }`}
             >
               Home
-            </button>
-            <button
-              onClick={() => onNavigate('exhibition')}
+            </Link>
+            <Link
+              href="/exhibition"
               className={`text-sm transition-colors ${
-                currentPage === 'exhibition' ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
+                pathname === '/exhibition' ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
               }`}
             >
               Exhibition
-            </button>
-            <button
-              onClick={() => onNavigate('about')}
+            </Link>
+            <Link
+              href="/about"
               className={`text-sm transition-colors ${
-                currentPage === 'about' ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
+                pathname === '/about' ? 'text-cyan-400' : 'text-gray-300 hover:text-white'
               }`}
             >
               About
-            </button>
+            </Link>
           </div>
 
-          <button
-            onClick={() => onNavigate('write')}
+          <Link
+            href="/write"
             className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all hover:scale-105"
           >
             Write a Letter
-          </button>
+          </Link>
 
           <button className="md:hidden text-white">
             <Menu size={24} />

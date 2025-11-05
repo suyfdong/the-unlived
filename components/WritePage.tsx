@@ -1,11 +1,11 @@
+'use client';
+
 import { useState } from 'react';
 import { Send, Sparkles } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-interface WritePageProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function WritePage({ onNavigate }: WritePageProps) {
+export default function WritePage() {
+  const router = useRouter();
   const [letterText, setLetterText] = useState('');
   const [recipient, setRecipient] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -14,7 +14,7 @@ export default function WritePage({ onNavigate }: WritePageProps) {
     if (!letterText.trim()) return;
     setIsGenerating(true);
     setTimeout(() => {
-      onNavigate('result');
+      router.push('/result');
     }, 2000);
   };
 
@@ -92,7 +92,7 @@ export default function WritePage({ onNavigate }: WritePageProps) {
 
             <div className="text-center">
               <button
-                onClick={() => onNavigate('home')}
+                onClick={() => router.push('/')}
                 className="text-gray-400 hover:text-white transition-colors text-sm"
               >
                 ← Back to Home

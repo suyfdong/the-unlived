@@ -1,10 +1,9 @@
+'use client';
+
 import { Search, Filter } from 'lucide-react';
+import Link from 'next/link';
 
-interface ExhibitionPageProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function ExhibitionPage({ onNavigate }: ExhibitionPageProps) {
+export default function ExhibitionPage() {
   const exhibits = [
     {
       id: 1,
@@ -120,10 +119,10 @@ export default function ExhibitionPage({ onNavigate }: ExhibitionPageProps) {
           <div className="flex-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {exhibits.map((exhibit) => (
-                <button
+                <Link
                   key={exhibit.id}
-                  onClick={() => onNavigate('detail')}
-                  className={`group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border-2 ${exhibit.color} transition-all duration-300 hover:scale-[1.02] text-left overflow-hidden`}
+                  href={`/letters/${exhibit.id}`}
+                  className={`group relative bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border-2 ${exhibit.color} transition-all duration-300 hover:scale-[1.02] text-left overflow-hidden block`}
                 >
                   <div className={`absolute inset-0 bg-gradient-to-br ${exhibit.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
 
@@ -145,7 +144,7 @@ export default function ExhibitionPage({ onNavigate }: ExhibitionPageProps) {
                       Read more →
                     </div>
                   </div>
-                </button>
+                </Link>
               ))}
             </div>
 

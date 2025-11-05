@@ -1,12 +1,11 @@
+'use client';
+
 import { Mail, BookOpen, Sparkles, Send, Eye, Share2, Heart, Clock, Star } from 'lucide-react';
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 
-interface HomePageProps {
-  onNavigate: (page: string) => void;
-}
-
-export default function HomePage({ onNavigate }: HomePageProps) {
+export default function HomePage() {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
   const [typedText, setTypedText] = useState('');
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -368,74 +367,76 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.8 }}
             >
-              <motion.button
-                onClick={() => onNavigate('write')}
-                className="group relative px-10 py-4 rounded-full font-medium text-lg overflow-hidden text-black"
-                style={{
-                  background: 'linear-gradient(135deg, #00D4FF 0%, #A7FF83 50%, #FFB347 100%)',
-                  boxShadow: '0 4px 20px rgba(0, 212, 255, 0.4)'
-                }}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <Link href="/write">
                 <motion.div
-                  className="absolute inset-0 opacity-0"
+                  className="group relative px-10 py-4 rounded-full font-medium text-lg overflow-hidden text-black inline-block"
                   style={{
-                    background: 'linear-gradient(135deg, #FFB347 0%, #00D4FF 50%, #A7FF83 100%)'
+                    background: 'linear-gradient(135deg, #00D4FF 0%, #A7FF83 50%, #FFB347 100%)',
+                    boxShadow: '0 4px 20px rgba(0, 212, 255, 0.4)'
                   }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-                <span className="relative flex items-center gap-3 font-bold">
-                  <Mail size={20} className="group-hover:rotate-12 transition-transform duration-300" />
-                  Write a Letter
-                </span>
-                {!prefersReducedMotion && (
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   <motion.div
-                    className="absolute inset-0 rounded-full pointer-events-none"
-                    animate={{
-                      boxShadow: [
-                        '0 0 20px rgba(0, 212, 255, 0.4)',
-                        '0 0 40px rgba(167, 255, 131, 0.6)',
-                        '0 0 20px rgba(0, 212, 255, 0.4)'
-                      ]
+                    className="absolute inset-0 opacity-0"
+                    style={{
+                      background: 'linear-gradient(135deg, #FFB347 0%, #00D4FF 50%, #A7FF83 100%)'
                     }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
+                    whileHover={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
                   />
-                )}
-              </motion.button>
+                  <span className="relative flex items-center gap-3 font-bold">
+                    <Mail size={20} className="group-hover:rotate-12 transition-transform duration-300" />
+                    Write a Letter
+                  </span>
+                  {!prefersReducedMotion && (
+                    <motion.div
+                      className="absolute inset-0 rounded-full pointer-events-none"
+                      animate={{
+                        boxShadow: [
+                          '0 0 20px rgba(0, 212, 255, 0.4)',
+                          '0 0 40px rgba(167, 255, 131, 0.6)',
+                          '0 0 20px rgba(0, 212, 255, 0.4)'
+                        ]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  )}
+                </motion.div>
+              </Link>
 
-              <motion.button
-                onClick={() => onNavigate('exhibition')}
-                className="relative px-10 py-4 border-2 text-white rounded-full font-medium text-lg overflow-hidden group"
-                style={{
-                  borderColor: '#00D4FF',
-                  boxShadow: '0 0 15px rgba(0, 212, 255, 0.3)'
-                }}
-                whileHover={{
-                  scale: 1.08,
-                  borderColor: '#A7FF83',
-                  boxShadow: '0 0 25px rgba(167, 255, 131, 0.5)'
-                }}
-                whileTap={{ scale: 0.98 }}
-              >
+              <Link href="/exhibition">
                 <motion.div
-                  className="absolute inset-0 opacity-0"
+                  className="relative px-10 py-4 border-2 text-white rounded-full font-medium text-lg overflow-hidden group inline-block"
                   style={{
-                    background: 'linear-gradient(135deg, #00D4FF 0%, #A7FF83 100%)'
+                    borderColor: '#00D4FF',
+                    boxShadow: '0 0 15px rgba(0, 212, 255, 0.3)'
                   }}
-                  whileHover={{ opacity: 0.15 }}
-                  transition={{ duration: 0.3 }}
-                />
-                <span className="relative flex items-center gap-3">
-                  <BookOpen size={20} />
-                  Read the Exhibition
-                </span>
-              </motion.button>
+                  whileHover={{
+                    scale: 1.08,
+                    borderColor: '#A7FF83',
+                    boxShadow: '0 0 25px rgba(167, 255, 131, 0.5)'
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <motion.div
+                    className="absolute inset-0 opacity-0"
+                    style={{
+                      background: 'linear-gradient(135deg, #00D4FF 0%, #A7FF83 100%)'
+                    }}
+                    whileHover={{ opacity: 0.15 }}
+                    transition={{ duration: 0.3 }}
+                  />
+                  <span className="relative flex items-center gap-3">
+                    <BookOpen size={20} />
+                    Read the Exhibition
+                  </span>
+                </motion.div>
+              </Link>
             </motion.div>
           </div>
         </motion.section>
@@ -660,30 +661,30 @@ export default function HomePage({ onNavigate }: HomePageProps) {
           <div className="max-w-7xl mx-auto">
             <div className="flex items-center justify-between mb-12">
               <h2 className="text-3xl md:text-4xl font-serif text-white">Featured Letters</h2>
-              <motion.button
-                onClick={() => onNavigate('exhibition')}
-                className="text-[#4DA8FF] hover:text-[#6BB6FF] transition-colors flex items-center gap-2 group"
-                whileHover={{ x: 5 }}
-                style={{ textShadow: '0 0 1px rgba(77, 168, 255, 0.5)' }}
-              >
-                View All
-                {!prefersReducedMotion && (
-                  <motion.span
-                    animate={{ x: [0, 5, 0] }}
-                    transition={{ duration: 1.5, repeat: Infinity }}
-                  >
-                    →
-                  </motion.span>
-                )}
-              </motion.button>
+              <Link href="/exhibition">
+                <motion.div
+                  className="text-[#4DA8FF] hover:text-[#6BB6FF] transition-colors flex items-center gap-2 group"
+                  whileHover={{ x: 5 }}
+                  style={{ textShadow: '0 0 1px rgba(77, 168, 255, 0.5)' }}
+                >
+                  View All
+                  {!prefersReducedMotion && (
+                    <motion.span
+                      animate={{ x: [0, 5, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      →
+                    </motion.span>
+                  )}
+                </motion.div>
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {featuredExhibits.map((exhibit, index) => (
-                <motion.button
-                  key={exhibit.id}
-                  onClick={() => onNavigate('detail')}
-                  className={`group relative backdrop-blur-md rounded-2xl p-8 border-2 ${exhibit.borderClass} transition-all text-left overflow-hidden shadow-xl`}
+                <Link key={exhibit.id} href={`/letters/${exhibit.id}`}>
+                  <motion.div
+                    className={`group relative backdrop-blur-md rounded-2xl p-8 border-2 ${exhibit.borderClass} transition-all text-left overflow-hidden shadow-xl cursor-pointer`}
                   style={{
                     background: 'rgba(11, 17, 32, 0.6)',
                     backdropFilter: 'blur(5px)'
@@ -740,7 +741,8 @@ export default function HomePage({ onNavigate }: HomePageProps) {
                       </span>
                     </motion.div>
                   </div>
-                </motion.button>
+                </motion.div>
+              </Link>
               ))}
             </div>
           </div>
@@ -887,29 +889,29 @@ export default function HomePage({ onNavigate }: HomePageProps) {
 
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               {[...Array(6)].map((_, i) => (
-                <motion.button
-                  key={i}
-                  onClick={() => onNavigate('detail')}
-                  className="flex-shrink-0 w-72 backdrop-blur-sm rounded-xl p-6 border border-[#4DA8FF]/20 hover:border-[#4DA8FF]/50 transition-all text-left group"
-                  style={{
-                    background: 'rgba(11, 17, 32, 0.6)'
-                  }}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1, duration: 0.5 }}
-                  whileHover={{ y: -5 }}
-                >
-                  <div className="text-xs text-gray-500 mb-2">Exhibit #{String(10000 + i).padStart(5, '0')}</div>
-                  <div className="text-xs border border-gray-600 text-gray-400 px-2 py-1 rounded-full inline-block mb-3 group-hover:border-[#4DA8FF] group-hover:text-[#4DA8FF] transition-colors">
-                    {['To a Lover', 'To Past Self', 'To a Friend'][i % 3]}
-                  </div>
-                  <p className="text-sm text-gray-300 line-clamp-3 group-hover:text-white transition-colors">
-                    {i % 2 === 0
-                      ? "The words I couldn't say have turned into years of silence..."
-                      : "If I could go back, I'd tell you that leaving doesn't mean forgetting..."}
-                  </p>
-                </motion.button>
+                <Link key={i} href={`/letters/${10000 + i}`}>
+                  <motion.div
+                    className="flex-shrink-0 w-72 backdrop-blur-sm rounded-xl p-6 border border-[#4DA8FF]/20 hover:border-[#4DA8FF]/50 transition-all text-left group cursor-pointer"
+                    style={{
+                      background: 'rgba(11, 17, 32, 0.6)'
+                    }}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1, duration: 0.5 }}
+                    whileHover={{ y: -5 }}
+                  >
+                    <div className="text-xs text-gray-500 mb-2">Exhibit #{String(10000 + i).padStart(5, '0')}</div>
+                    <div className="text-xs border border-gray-600 text-gray-400 px-2 py-1 rounded-full inline-block mb-3 group-hover:border-[#4DA8FF] group-hover:text-[#4DA8FF] transition-colors">
+                      {['To a Lover', 'To Past Self', 'To a Friend'][i % 3]}
+                    </div>
+                    <p className="text-sm text-gray-300 line-clamp-3 group-hover:text-white transition-colors">
+                      {i % 2 === 0
+                        ? "The words I couldn't say have turned into years of silence..."
+                        : "If I could go back, I'd tell you that leaving doesn't mean forgetting..."}
+                    </p>
+                  </motion.div>
+                </Link>
               ))}
             </div>
           </div>
@@ -952,28 +954,29 @@ export default function HomePage({ onNavigate }: HomePageProps) {
               </div>
 
               <div className="flex items-center gap-8">
-                <motion.button
-                  onClick={() => onNavigate('about')}
-                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm"
-                  whileHover={{ y: -2, color: '#F1D29A' }}
-                  transition={{ duration: 0.4 }}
-                >
-                  About
-                </motion.button>
-                <motion.button
-                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm"
+                <Link href="/about">
+                  <motion.div
+                    className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm"
+                    whileHover={{ y: -2, color: '#F1D29A' }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    About
+                  </motion.div>
+                </Link>
+                <motion.div
+                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm cursor-pointer"
                   whileHover={{ y: -2, color: '#F1D29A' }}
                   transition={{ duration: 0.4 }}
                 >
                   Privacy
-                </motion.button>
-                <motion.button
-                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm"
+                </motion.div>
+                <motion.div
+                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm cursor-pointer"
                   whileHover={{ y: -2, color: '#F1D29A' }}
                   transition={{ duration: 0.4 }}
                 >
                   Contact
-                </motion.button>
+                </motion.div>
               </div>
             </div>
 
