@@ -1,89 +1,36 @@
-# Deployment Guide
+# 🚀 部署指南
 
-## Deploying to Vercel (Recommended)
+## 部署到 Vercel
 
-Vercel是 Next.js 的最佳部署平台，提供零配置部署。
+### 步骤 1: 准备 GitHub 仓库
+✅ 已完成 - 代码已推送到: https://github.com/suyfdong/the-unlived
 
-### 步骤：
+### 步骤 2: 在 Vercel 上导入项目
 
-1. **推送代码到 GitHub**
-   ```bash
-   git add .
-   git commit -m "Migrate to Next.js"
-   git push origin main
-   ```
+1. 访问 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 点击 "Add New..." → "Project"
+3. 选择 "Import Git Repository"
+4. 找到 `the-unlived` 仓库并点击 "Import"
 
-2. **连接 Vercel**
-   - 访问 [vercel.com](https://vercel.com)
-   - 使用 GitHub 账号登录
-   - 点击 "New Project"
-   - 选择你的 `the-unlived` 仓库
-   - Vercel 会自动检测 Next.js 项目
+### 步骤 3: 配置环境变量
 
-3. **配置构建设置**
-   - Framework Preset: Next.js (自动检测)
-   - Build Command: `npm run build` (默认)
-   - Output Directory: `.next` (默认)
-   - Install Command: `npm install` (默认)
+在 Vercel 项目设置中添加以下环境变量：
 
-4. **环境变量 (如果需要)**
-   在 Vercel 项目设置中添加环境变量：
-   - `NEXT_PUBLIC_SUPABASE_URL` (未来添加)
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` (未来添加)
-   - 其他 API 密钥
-
-5. **部署**
-   - 点击 "Deploy"
-   - Vercel 会自动构建并部署你的应用
-   - 每次推送到 GitHub 都会自动重新部署
-
-## 本地测试生产构建
-
-在部署前，你应该本地测试生产构建：
-
-```bash
-npm run build
-npm start
+```
+NEXT_PUBLIC_SUPABASE_URL=https://eteilyxixzvyqdsjywlr.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0ZWlseXhpeHp2eXFkc2p5d2xyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzMjc4ODAsImV4cCI6MjA3NzkwMzg4MH0.h0biXDKJIy9J9YqR7Wy6mLRFbHyFMYBSCDfF0sUnDHk
+OPENROUTER_API_KEY=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
+NEXT_PUBLIC_APP_URL=https://your-project.vercel.app
 ```
 
-访问 http://localhost:3000 查看生产版本
+### 步骤 4: 部署
+1. 点击 "Deploy"
+2. 等待构建完成（2-3分钟）
+3. 访问生成的域名测试
 
-## 故障排除
-
-### 构建失败
-
-1. 确保所有依赖已安装：
-   ```bash
-   rm -rf node_modules
-   npm install
-   ```
-
-2. 清除缓存：
-   ```bash
-   rm -rf .next
-   npm run build
-   ```
-
-### 路由问题
-
-确保所有页面都有正确的文件结构：
-- `app/page.tsx` - 首页
-- `app/write/page.tsx` - 写信页
-- `app/exhibition/page.tsx` - 展览页
-- `app/about/page.tsx` - 关于页
-- `app/result/page.tsx` - 结果页
-- `app/letters/[id]/page.tsx` - 动态详情页
-
-### 性能优化
-
-1. **图片优化**: 使用 Next.js `<Image>` 组件
-2. **字体优化**: 已通过 CSS @import 加载 Google Fonts
-3. **代码分割**: Next.js 自动处理
-4. **静态生成**: 大部分页面已预渲染为静态内容
-
-## 自定义域名
-
-在 Vercel 项目设置中：
-1. 进入 "Domains"
-2. 添加你的自定义域名
-3. 按照 DNS 配置说明操作
+## 验证清单
+- ✅ 首页加载正常
+- ✅ 写信功能正常
+- ✅ AI 生成回复正常
+- ✅ 展览墙显示正常
+- ✅ 导出图片功能正常
