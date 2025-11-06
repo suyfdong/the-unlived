@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
-// 提交展览墙的限流配置（比生成更宽松）
+// 提交展览墙的双层限流配置
 const SUBMIT_RATE_LIMIT = {
-  maxRequests: parseInt(process.env.MAX_SUBMIT_PER_HOUR || '20'), // 每小时最多20次提交
+  maxRequests: parseInt(process.env.MAX_SUBMIT_PER_HOUR || '20'), // 每小时最多20次
   windowMs: 60 * 60 * 1000, // 1小时
-  message: '提交过于频繁，请1小时后再试',
+  maxRequestsPerDay: parseInt(process.env.MAX_SUBMIT_PER_DAY || '30'), // 每天最多30次
+  message: '提交过于频繁，请稍后再试',
 };
 
 export async function POST(request: NextRequest) {

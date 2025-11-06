@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
-// 限流配置
+// 双层限流配置
 const RATE_LIMIT_CONFIG = {
-  maxRequests: parseInt(process.env.MAX_REQUESTS_PER_HOUR || '10'), // 每小时最多10次请求
+  maxRequests: parseInt(process.env.MAX_REQUESTS_PER_HOUR || '10'), // 每小时最多10次
   windowMs: 60 * 60 * 1000, // 1小时
-  message: '您的请求过于频繁，请1小时后再试',
+  maxRequestsPerDay: parseInt(process.env.MAX_REQUESTS_PER_DAY || '20'), // 每天最多20次
+  message: '您的请求过于频繁，请稍后再试',
 };
 
 // AI Prompt templates based on recipient type
