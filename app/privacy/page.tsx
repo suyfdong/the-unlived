@@ -1,4 +1,19 @@
 import Navigation from '@/components/Navigation'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'Privacy-first design: Your original unsent letters are never stored. Only AI replies can be publicly displayed. Learn about our data practices.',
+  openGraph: {
+    title: 'Privacy Policy | The Unlived Project',
+    description: 'Privacy-first design: Your unsent letters are never stored.',
+    url: '/privacy',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function PrivacyPage() {
   return (
