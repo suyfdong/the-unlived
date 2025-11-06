@@ -1,87 +1,218 @@
 'use client';
 
-import { useState } from 'react';
-import { Download, Copy, Upload, Home, Check } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Download, Copy, Upload, Home, Check, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import html2canvas from 'html2canvas';
+import { motion } from 'framer-motion';
+
+// 打字机动画组件
+function TypewriterText({ text, onComplete }: { text: string; onComplete?: () => void }) {
+  const [displayedText, setDisplayedText] = useState('');
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (currentIndex < text.length) {
+      intervalRef.current = setTimeout(() => {
+        setDisplayedText(prev => prev + text[currentIndex]);
+        setCurrentIndex(prev => prev + 1);
+      }, 30); // 每30ms显示一个字符
+    } else if (currentIndex === text.length && onComplete) {
+      onComplete();
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearTimeout(intervalRef.current);
+      }
+    };
+  }, [currentIndex, text, onComplete]);
+
+  return (
+    <div className="text-amber-900 font-serif leading-relaxed whitespace-pre-line text-lg">
+      {displayedText}
+      {currentIndex < text.length && (
+        <span className="inline-block w-0.5 h-5 bg-amber-900 ml-1 animate-pulse" />
+      )}
+    </div>
+  );
+}
+
+interface LetterResult {
+  letterId: string;
+  aiReply: string;
+  recipientType: string;
+}
 
 export default function ResultPage() {
   const router = useRouter();
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [letterData, setLetterData] = useState<LetterResult | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [exhibitNumber, setExhibitNumber] = useState('');
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [typingComplete, setTypingComplete] = useState(false);
+  const letterCardRef = useRef<HTMLDivElement>(null);
 
-  const aiReply = `Dear friend,
-
-I understand why you wrote these words, even if you never sent them. Sometimes the most important conversations are the ones we have with ourselves, in the quiet moments when we finally allow ourselves to feel.
-
-You were brave to put these feelings into words. Not everyone can do that.
-
-What you're feeling is real, and it matters. Whether or not these words ever reach their intended destination, they've already served a purpose—they've given shape to something that was weighing on your heart.
-
-The past is a place we visit, but we don't have to live there. You can hold these memories and still move forward. Both are possible.
-
-Whatever you decide to do with these words, know that writing them was an act of courage.
-
-With understanding,
-The Echo`;
+  useEffect(() => {
+    // Get the result from sessionStorage
+    const storedResult = sessionStorage.getItem('letterResult');
+    if (storedResult) {
+      const data = JSON.parse(storedResult);
+      setLetterData(data);
+      // Generate a random exhibit number for display
+      setExhibitNumber(String(Math.floor(Math.random() * 90000) + 10000).padStart(5, '0'));
+    } else {
+      // If no data, redirect to write page
+      router.push('/write');
+    }
+  }, [router]);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(aiReply);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (letterData) {
+      navigator.clipboard.writeText(letterData.aiReply);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
-  const handleSubmit = () => {
-    setShowSubmitModal(false);
-    setTimeout(() => {
-      router.push('/exhibition');
-    }, 500);
+  const handleSaveImage = async () => {
+    if (!letterCardRef.current || !typingComplete) return;
+
+    try {
+      const canvas = await html2canvas(letterCardRef.current, {
+        backgroundColor: null,
+        scale: 2, // 提高清晰度
+        logging: false,
+      });
+
+      // 转换为图片并下载
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `letter-${exhibitNumber}.png`;
+          link.click();
+          URL.revokeObjectURL(url);
+        }
+      });
+    } catch (error) {
+      console.error('Error saving image:', error);
+      alert('Failed to save image. Please try again.');
+    }
   };
+
+  const handleSubmit = async () => {
+    if (!letterData || hasSubmitted || isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/submit-to-exhibition', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          letterId: letterData.letterId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Check if already submitted
+        if (data.alreadyPublished) {
+          alert('This letter has already been submitted to the exhibition.');
+          setHasSubmitted(true);
+          setShowSubmitModal(false);
+          return;
+        }
+        throw new Error(data.error || 'Failed to submit to exhibition');
+      }
+
+      setHasSubmitted(true);
+      setShowSubmitModal(false);
+
+      // Clear the session storage
+      sessionStorage.removeItem('letterResult');
+
+      // Redirect to the exhibition
+      setTimeout(() => {
+        router.push('/exhibition');
+      }, 500);
+    } catch (error: any) {
+      console.error('Submit error:', error);
+      alert(error.message || 'Failed to submit to exhibition. Please try again.');
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!letterData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
       <div className="max-w-4xl mx-auto px-6">
         <div className="text-center mb-8">
           <div className="inline-block px-4 py-2 bg-cyan-400/10 border border-cyan-400/30 rounded-full text-cyan-400 text-sm mb-4">
-            ✨ Generated Reply
+            {typingComplete ? '✨ Reply Complete' : '✍️ Words are taking shape...'}
           </div>
           <h1 className="text-3xl text-white font-light">Your Letter Has Been Answered</h1>
         </div>
 
-        <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-12 shadow-2xl border-4 border-amber-100 mb-8">
+        <div
+          ref={letterCardRef}
+          className="relative bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-12 shadow-2xl border-4 border-amber-100 mb-8"
+        >
           <div className="absolute top-0 left-0 w-full h-full opacity-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDQwIDAgTCAwIDAgMCA0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] rounded-3xl"></div>
 
           <div className="relative">
-            <div className="text-amber-900 font-serif leading-relaxed whitespace-pre-line text-lg">
-              {aiReply}
-            </div>
+            <TypewriterText
+              text={letterData.aiReply}
+              onComplete={() => setTypingComplete(true)}
+            />
           </div>
 
           <div className="mt-8 pt-6 border-t border-amber-200 text-right text-sm text-amber-700">
-            Exhibit #{String(Math.floor(Math.random() * 99999)).padStart(5, '0')}
+            Exhibit #{exhibitNumber}
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <button
             onClick={handleCopy}
-            className="flex items-center justify-center gap-2 bg-gray-800 text-white py-3 rounded-xl hover:bg-gray-700 transition-colors border border-gray-700"
+            disabled={!typingComplete}
+            className="flex items-center justify-center gap-2 bg-gray-800 text-white py-3 rounded-xl hover:bg-gray-700 transition-colors border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {copied ? <Check size={20} /> : <Copy size={20} />}
             {copied ? 'Copied!' : 'Copy Text'}
           </button>
 
-          <button className="flex items-center justify-center gap-2 bg-gray-800 text-white py-3 rounded-xl hover:bg-gray-700 transition-colors border border-gray-700">
+          <button
+            onClick={handleSaveImage}
+            disabled={!typingComplete}
+            className="flex items-center justify-center gap-2 bg-gray-800 text-white py-3 rounded-xl hover:bg-gray-700 transition-colors border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             <Download size={20} />
             Save Image
           </button>
 
           <button
             onClick={() => setShowSubmitModal(true)}
-            className="flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 to-blue-500 text-black py-3 rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all font-medium"
+            disabled={!typingComplete || isSubmitting || hasSubmitted}
+            className="flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-400 to-blue-500 text-black py-3 rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Upload size={20} />
-            Submit to Exhibition
+            {hasSubmitted ? 'Already Submitted' : isSubmitting ? 'Submitting...' : 'Submit to Exhibition'}
           </button>
         </div>
 
@@ -114,15 +245,29 @@ The Echo`;
             <div className="flex gap-3">
               <button
                 onClick={() => setShowSubmitModal(false)}
-                className="flex-1 py-3 border border-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors"
+                disabled={isSubmitting}
+                className="flex-1 py-3 border border-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSubmit}
-                className="flex-1 py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-black rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all font-medium"
+                disabled={isSubmitting}
+                className="flex-1 py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-black rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all font-medium disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
               >
-                Confirm
+                {isSubmitting ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    >
+                      <Sparkles size={16} />
+                    </motion.div>
+                    Submitting...
+                  </>
+                ) : (
+                  'Confirm'
+                )}
               </button>
             </div>
           </div>

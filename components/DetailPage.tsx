@@ -1,42 +1,120 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Share2 } from 'lucide-react';
 import Link from 'next/link';
+import { supabase, LetterPublic } from '@/lib/supabase';
 
 interface DetailPageProps {
-  id?: string;
+  id: string;
 }
 
+// Helper function to format recipient type for display
+const formatRecipientType = (type: string) => {
+  const formats: { [key: string]: string } = {
+    'lover': 'To a Lover',
+    'friend': 'To a Friend',
+    'parent': 'To a Parent',
+    'past-self': 'To Past Self',
+    'no-one': 'To No One',
+  };
+  return formats[type] || type;
+};
+
+// Helper function to get border color
+const getBorderColor = (type: string) => {
+  const colors: { [key: string]: string } = {
+    'lover': 'border-pink-500 text-pink-400',
+    'friend': 'border-purple-500 text-purple-400',
+    'parent': 'border-green-500 text-green-400',
+    'past-self': 'border-cyan-500 text-cyan-400',
+    'no-one': 'border-amber-500 text-amber-400',
+  };
+  return colors[type] || 'border-gray-500 text-gray-400';
+};
+
 export default function DetailPage({ id }: DetailPageProps) {
-  const exhibit = {
-    id: 10234,
-    category: 'To a Lover',
-    date: 'November 2024',
-    reply: `Dear one,
+  const [letter, setLetter] = useState<LetterPublic | null>(null);
+  const [relatedLetters, setRelatedLetters] = useState<LetterPublic[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
-I wonder if you still think of that night under the cherry blossoms. The way the petals fell like snow, and how we promised forever in a language we both knew was temporary.
+  useEffect(() => {
+    loadLetter();
+  }, [id]);
 
-I want you to know: it wasn't a lie. Forever exists in moments, not in years. What we felt was real, even if it couldn't last.
+  const loadLetter = async () => {
+    try {
+      // Load the specific letter
+      const { data: letterData, error: letterError } = await supabase
+        .from('letters_public')
+        .select('*')
+        .eq('id', id)
+        .single();
 
-You didn't fail. Love doesn't work that way. Sometimes people grow in different directions, and that's not abandonment—it's honoring who you both needed to become.
+      if (letterError || !letterData) {
+        setNotFound(true);
+        setIsLoading(false);
+        return;
+      }
 
-The cherry blossoms fall every year, and every year they come back. Some things end not because they weren't beautiful, but because their season passed.
+      setLetter(letterData);
+      setIsLoading(false); // 立即显示主要内容
 
-You can miss someone and still be glad you let them go. Both truths can live in your heart.
+      // 异步增加浏览次数（不阻塞渲染）
+      Promise.resolve(
+        supabase
+          .from('letters_public')
+          .update({ views: (letterData.views || 0) + 1 })
+          .eq('id', id)
+      ).catch(console.error);
 
-What you had was real. What you feel now is real too. And someday, you'll remember that night with more warmth than ache.
-
-Until then, be gentle with yourself.
-
-With understanding,
-The Echo`
+      // 异步加载相关信件（不阻塞渲染）
+      Promise.resolve(
+        supabase
+          .from('letters_public')
+          .select('*')
+          .eq('recipient_type', letterData.recipient_type)
+          .neq('id', id)
+          .order('created_at', { ascending: false })
+          .limit(3)
+      ).then(({ data }) => {
+        if (data) setRelatedLetters(data);
+      }).catch(console.error);
+    } catch (error) {
+      console.error('Error loading letter:', error);
+      setNotFound(true);
+      setIsLoading(false);
+    }
   };
 
-  const relatedLetters = [
-    { id: 1, category: 'To a Lover', preview: 'Closure doesn\'t always come from the other person...' },
-    { id: 2, category: 'To Past Self', preview: 'You were brave to leave. You were brave to stay...' },
-    { id: 3, category: 'To a Friend', preview: 'Growing apart doesn\'t diminish what we were...' }
-  ];
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="text-white">Loading...</div>
+      </div>
+    );
+  }
+
+  if (notFound || !letter) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-3xl text-white mb-4">Letter Not Found</h1>
+          <Link href="/exhibition" className="text-cyan-400 hover:text-cyan-300">
+            ← Back to Exhibition
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const displayType = formatRecipientType(letter.recipient_type);
+  const borderColor = getBorderColor(letter.recipient_type);
+  const formattedDate = new Date(letter.created_at).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long'
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-gray-900 to-black pt-24 pb-16">
@@ -52,17 +130,23 @@ The Echo`
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              <span className="text-gray-500 text-sm">Exhibit #{String(exhibit.id).padStart(5, '0')}</span>
-              <span className="px-3 py-1 rounded-full text-xs border border-pink-500 text-pink-400">
-                {exhibit.category}
+              <span className="text-gray-500 text-sm">Exhibit #{letter.exhibit_number}</span>
+              <span className={`px-3 py-1 rounded-full text-xs border ${borderColor}`}>
+                {displayType}
               </span>
             </div>
-            <button className="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors">
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+              }}
+              className="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition-colors"
+            >
               <Share2 size={18} />
               Share
             </button>
           </div>
-          <p className="text-gray-500 text-sm">{exhibit.date}</p>
+          <p className="text-gray-500 text-sm">{formattedDate} · {letter.views} views</p>
         </div>
 
         <div className="relative bg-gradient-to-br from-amber-50 to-orange-50 rounded-3xl p-12 md:p-16 shadow-2xl border-4 border-amber-100 mb-12">
@@ -70,7 +154,7 @@ The Echo`
 
           <div className="relative">
             <div className="text-amber-900 font-serif leading-relaxed whitespace-pre-line text-lg">
-              {exhibit.reply}
+              {letter.ai_reply}
             </div>
           </div>
         </div>
@@ -84,26 +168,35 @@ The Echo`
           </p>
         </div>
 
-        <div className="mb-8">
-          <h3 className="text-white text-xl font-light mb-6">More Letters Like This</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {relatedLetters.map((letter) => (
-              <Link
-                key={letter.id}
-                href={`/letters/${letter.id}`}
-                className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-all text-left group block"
-              >
-                <div className="text-xs text-gray-500 mb-2">Exhibit #{String(10000 + letter.id).padStart(5, '0')}</div>
-                <div className="text-xs border border-gray-600 text-gray-400 px-2 py-1 rounded-full inline-block mb-3">
-                  {letter.category}
-                </div>
-                <p className="text-sm text-gray-300 line-clamp-3 group-hover:text-white transition-colors">
-                  {letter.preview}
-                </p>
-              </Link>
-            ))}
+        {relatedLetters.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-white text-xl font-light mb-6">More Letters Like This</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {relatedLetters.map((relatedLetter) => {
+                const preview = relatedLetter.ai_reply.length > 100
+                  ? relatedLetter.ai_reply.substring(0, 100) + '...'
+                  : relatedLetter.ai_reply;
+                const category = formatRecipientType(relatedLetter.recipient_type);
+
+                return (
+                  <Link
+                    key={relatedLetter.id}
+                    href={`/letters/${relatedLetter.id}`}
+                    className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-xl p-4 border border-gray-700 hover:border-gray-600 transition-all text-left group block"
+                  >
+                    <div className="text-xs text-gray-500 mb-2">Exhibit #{relatedLetter.exhibit_number}</div>
+                    <div className="text-xs border border-gray-600 text-gray-400 px-2 py-1 rounded-full inline-block mb-3">
+                      {category}
+                    </div>
+                    <p className="text-sm text-gray-300 line-clamp-3 group-hover:text-white transition-colors">
+                      {preview}
+                    </p>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="text-center">
           <Link

@@ -10,7 +10,13 @@ export default function HomePage() {
   const [typedText, setTypedText] = useState('');
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const quoteText = '"I reply not to your words, but to your silence."';
+
+  // Initialize client-side flag
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -57,28 +63,40 @@ export default function HomePage() {
       category: 'To a Lover',
       preview: 'I wonder if you still think of that night under the cherry blossoms. The way the petals fell like snow, and how we promised forever...',
       borderColor: '#EEC9B6',
-      borderClass: 'border-[#EEC9B6]/40'
+      borderClass: 'border-[#EEC9B6]/40',
+      views: 423,
+      hearts: 38,
+      daysAgo: 12
     },
     {
       id: 2,
       category: 'To Past Self',
       preview: 'You were brave to leave. You were brave to stay. Both are true, and both versions of you deserved compassion and grace...',
       borderColor: '#B0B9FF',
-      borderClass: 'border-[#B0B9FF]/40'
+      borderClass: 'border-[#B0B9FF]/40',
+      views: 567,
+      hearts: 52,
+      daysAgo: 8
     },
     {
       id: 3,
       category: 'To a Friend',
       preview: 'Distance doesn\'t erase the years we shared. It only makes them clearer, like how you can see stars better when you\'re far from the city...',
       borderColor: '#A9E6E3',
-      borderClass: 'border-[#A9E6E3]/40'
+      borderClass: 'border-[#A9E6E3]/40',
+      views: 312,
+      hearts: 29,
+      daysAgo: 15
     },
     {
       id: 4,
       category: 'To No One',
       preview: 'Some words exist just to be written, not to be sent. They are prayers to the universe, confessions to the void that understands...',
       borderColor: '#F1D29A',
-      borderClass: 'border-[#F1D29A]/40'
+      borderClass: 'border-[#F1D29A]/40',
+      views: 189,
+      hearts: 21,
+      daysAgo: 6
     }
   ];
 
@@ -90,7 +108,8 @@ export default function HomePage() {
     "Let your silence find a place."
   ];
 
-  const bubbles = Array.from({ length: 60 }, (_, i) => ({
+  // Generate random values only on client side to avoid hydration mismatch
+  const bubbles = isClient ? Array.from({ length: 60 }, (_, i) => ({
     id: i,
     size: 30 + Math.random() * 80,
     x: Math.random() * 100,
@@ -102,9 +121,9 @@ export default function HomePage() {
       : i % 3 === 1
       ? `rgba(167, 255, 131, ${0.08 + Math.random() * 0.12})`
       : `rgba(255, 179, 71, ${0.08 + Math.random() * 0.12})`
-  }));
+  })) : [];
 
-  const stars = Array.from({ length: 80 }, (_, i) => ({
+  const stars = isClient ? Array.from({ length: 80 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
@@ -112,7 +131,18 @@ export default function HomePage() {
     duration: 2 + Math.random() * 4,
     delay: Math.random() * 5,
     color: ['#00D4FF', '#A7FF83', '#FFB347', '#00FFF0', '#FFD700'][Math.floor(Math.random() * 5)]
-  }));
+  })) : [];
+
+  // Generate sparkles for hero section
+  const sparkles = isClient ? Array.from({ length: 15 }, (_, i) => ({
+    id: i,
+    left: 20 + Math.random() * 60,
+    top: 20 + Math.random() * 60,
+    x: Math.random() * 50 - 25,
+    y: Math.random() * 50 - 25,
+    duration: 8 + Math.random() * 4,
+    delay: Math.random() * 3,
+  })) : [];
 
   return (
     <div className="min-h-screen bg-[#0B1120] relative overflow-hidden">
@@ -121,7 +151,7 @@ export default function HomePage() {
         style={{ y: prefersReducedMotion ? 0 : backgroundY }}
       />
 
-      {!isMobile && !prefersReducedMotion && (
+      {isClient && !isMobile && !prefersReducedMotion && (
         <>
           <div className="fixed inset-0 z-0 pointer-events-none">
             {bubbles.map((bubble) => (
@@ -137,6 +167,12 @@ export default function HomePage() {
                   filter: 'blur(30px)',
                   willChange: 'transform, opacity',
                   border: `1px solid ${bubble.color}`
+                }}
+                initial={{
+                  y: -30,
+                  x: -15,
+                  scale: 0.8,
+                  opacity: 0.3
                 }}
                 animate={{
                   y: [-30, 30, -30],
@@ -156,6 +192,9 @@ export default function HomePage() {
 
           <motion.div
             className="fixed inset-0 z-50 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             style={{
               background: `
                 radial-gradient(circle 300px at ${smoothMouseX}px ${smoothMouseY}px,
@@ -172,6 +211,9 @@ export default function HomePage() {
           />
           <motion.div
             className="fixed inset-0 z-50 pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
             style={{
               background: `radial-gradient(circle 150px at ${smoothMouseX}px ${smoothMouseY}px, rgba(255,255,255,0.3), transparent)`,
               mixBlendMode: 'overlay',
@@ -181,8 +223,9 @@ export default function HomePage() {
         </>
       )}
 
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        {!prefersReducedMotion && stars.map((star) => (
+      {isClient && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          {!prefersReducedMotion && stars.map((star) => (
           <motion.div
             key={star.id}
             className="absolute rounded-full"
@@ -194,6 +237,11 @@ export default function HomePage() {
               backgroundColor: star.color,
               boxShadow: `0 0 ${star.size * 2}px ${star.color}`,
               willChange: 'transform, opacity'
+            }}
+            initial={{
+              opacity: 0.2,
+              scale: 1,
+              y: 0
             }}
             animate={{
               opacity: [0.2, 0.8, 0.2],
@@ -207,8 +255,9 @@ export default function HomePage() {
               ease: "easeInOut"
             }}
           />
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       <motion.div
         className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full blur-3xl pointer-events-none"
@@ -328,12 +377,13 @@ export default function HomePage() {
             </motion.div>
 
             <motion.h1
-              className="text-6xl md:text-8xl font-serif leading-tight mb-6 tracking-tight"
+              className="text-6xl md:text-8xl font-serif leading-tight mb-6 tracking-tight pb-2"
               style={{
                 background: 'linear-gradient(135deg, #00D4FF 0%, #A7FF83 30%, #FFB347 60%, #ffffff 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                filter: 'drop-shadow(0 0 20px rgba(0, 212, 255, 0.3))'
+                filter: 'drop-shadow(0 0 20px rgba(0, 212, 255, 0.3))',
+                lineHeight: '1.2'
               }}
               animate={!prefersReducedMotion ? {
                 filter: [
@@ -680,11 +730,11 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
               {featuredExhibits.map((exhibit, index) => (
-                <Link key={exhibit.id} href={`/letters/${exhibit.id}`}>
+                <Link key={exhibit.id} href={`/letters/${exhibit.id}`} className="h-full">
                   <motion.div
-                    className={`group relative backdrop-blur-md rounded-2xl p-8 border-2 ${exhibit.borderClass} transition-all text-left overflow-hidden shadow-xl cursor-pointer`}
+                    className={`group relative backdrop-blur-md rounded-2xl p-8 border-2 ${exhibit.borderClass} transition-all text-left overflow-hidden shadow-xl cursor-pointer h-full flex flex-col`}
                   style={{
                     background: 'rgba(11, 17, 32, 0.6)',
                     backdropFilter: 'blur(5px)'
@@ -709,7 +759,7 @@ export default function HomePage() {
                     transition={{ duration: 0.5 }}
                   />
 
-                  <div className="relative">
+                  <div className="relative flex-1 flex flex-col">
                     <div className="flex items-start justify-between mb-4">
                       <span className="text-xs text-gray-500 font-mono">
                         Exhibit #{String(exhibit.id).padStart(5, '0')}
@@ -719,25 +769,25 @@ export default function HomePage() {
                       </span>
                     </div>
 
-                    <p className="text-gray-300 leading-relaxed text-lg font-light group-hover:text-white transition-colors">
+                    <p className="text-gray-300 leading-relaxed text-lg font-light group-hover:text-white transition-colors flex-1">
                       {exhibit.preview}
                     </p>
 
                     <motion.div
-                      className="mt-6 flex items-center gap-4 text-xs text-gray-500"
+                      className="mt-auto pt-6 flex items-center gap-4 text-xs text-gray-500"
                       whileHover={{ color: '#4DA8FF' }}
                     >
                       <span className="flex items-center gap-1 group-hover:text-[#4DA8FF] transition-colors">
                         <Eye size={14} />
-                        {Math.floor(Math.random() * 500 + 100)}
+                        {exhibit.views}
                       </span>
                       <span className="flex items-center gap-1 group-hover:text-[#4DA8FF] transition-colors">
                         <Heart size={14} />
-                        {Math.floor(Math.random() * 50 + 10)}
+                        {exhibit.hearts}
                       </span>
                       <span className="flex items-center gap-1 group-hover:text-[#4DA8FF] transition-colors">
                         <Clock size={14} />
-                        {Math.floor(Math.random() * 30 + 1)}d ago
+                        {exhibit.daysAgo}d ago
                       </span>
                     </motion.div>
                   </div>
@@ -767,23 +817,23 @@ export default function HomePage() {
             }}
           />
 
-          {!prefersReducedMotion && [...Array(15)].map((_, i) => (
+          {!prefersReducedMotion && sparkles.map((sparkle) => (
             <motion.div
-              key={i}
+              key={sparkle.id}
               className="absolute w-px h-px bg-[#4DA8FF] rounded-full pointer-events-none"
               style={{
-                left: `${20 + Math.random() * 60}%`,
-                top: `${20 + Math.random() * 60}%`,
+                left: `${sparkle.left}%`,
+                top: `${sparkle.top}%`,
               }}
               animate={{
                 opacity: [0, 0.6, 0],
-                x: [0, Math.random() * 50 - 25],
-                y: [0, Math.random() * 50 - 25],
+                x: [0, sparkle.x],
+                y: [0, sparkle.y],
               }}
               transition={{
-                duration: 8 + Math.random() * 4,
+                duration: sparkle.duration,
                 repeat: Infinity,
-                delay: Math.random() * 3,
+                delay: sparkle.delay,
                 ease: "easeInOut"
               }}
             />
@@ -963,13 +1013,15 @@ export default function HomePage() {
                     About
                   </motion.div>
                 </Link>
-                <motion.div
-                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm cursor-pointer"
-                  whileHover={{ y: -2, color: '#F1D29A' }}
-                  transition={{ duration: 0.4 }}
-                >
-                  Privacy
-                </motion.div>
+                <Link href="/privacy">
+                  <motion.div
+                    className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm"
+                    whileHover={{ y: -2, color: '#F1D29A' }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    Privacy
+                  </motion.div>
+                </Link>
                 <motion.div
                   className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm cursor-pointer"
                   whileHover={{ y: -2, color: '#F1D29A' }}

@@ -1,21 +1,74 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Send, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// 沉浸式等待文案
+const loadingMessages = [
+  "Someone is writing back to you...",
+  "The reply is finding its words...",
+  "The silence is turning into words...",
+  "A response is taking shape...",
+  "Words are being chosen carefully...",
+];
 
 export default function WritePage() {
   const router = useRouter();
   const [letterText, setLetterText] = useState('');
   const [recipient, setRecipient] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState('');
+  const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
 
-  const handleGenerate = () => {
-    if (!letterText.trim()) return;
+  // 轮换加载文案
+  useEffect(() => {
+    if (!isGenerating) return;
+
+    const interval = setInterval(() => {
+      setLoadingMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+    }, 3000); // 每3秒切换一次
+
+    return () => clearInterval(interval);
+  }, [isGenerating]);
+
+  const handleGenerate = async () => {
+    if (!letterText.trim() || !recipient) return;
+
     setIsGenerating(true);
-    setTimeout(() => {
+    setError('');
+
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userText: letterText,
+          recipientType: recipient,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate reply');
+      }
+
+      // Store the result in sessionStorage to pass to result page
+      sessionStorage.setItem('letterResult', JSON.stringify({
+        letterId: data.letterId,
+        aiReply: data.aiReply,
+        recipientType: data.recipientType,
+      }));
+
       router.push('/result');
-    }, 2000);
+    } catch (err: any) {
+      setError(err.message || 'Something went wrong. Please try again.');
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -72,6 +125,12 @@ export default function WritePage() {
               </p>
             </div>
 
+            {error && (
+              <div className="bg-red-900/20 border border-red-500 rounded-xl p-4">
+                <p className="text-red-400 text-sm">{error}</p>
+              </div>
+            )}
+
             <button
               onClick={handleGenerate}
               disabled={!letterText.trim() || !recipient || isGenerating}
@@ -108,6 +167,94 @@ export default function WritePage() {
           </p>
         </div>
       </div>
+
+      {/* 加载动画覆盖层 */}
+      <AnimatePresence>
+        {isGenerating && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center z-50"
+          >
+            <div className="text-center max-w-md px-6">
+              {/* 动画光环 */}
+              <motion.div
+                className="relative w-32 h-32 mx-auto mb-8"
+                animate={{
+                  scale: [1, 1.2, 1],
+                  opacity: [0.5, 0.8, 0.5],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <div className="absolute inset-0 rounded-full border-4 border-cyan-400/30" />
+                <motion.div
+                  className="absolute inset-2 rounded-full border-4 border-cyan-400/50"
+                  animate={{ rotate: 360 }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+                <motion.div
+                  className="absolute inset-4 rounded-full border-4 border-amber-400/50"
+                  animate={{ rotate: -360 }}
+                  transition={{
+                    duration: 4,
+                    repeat: Infinity,
+                    ease: "linear",
+                  }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Sparkles className="text-cyan-400" size={32} />
+                </div>
+              </motion.div>
+
+              {/* 轮换文案 */}
+              <AnimatePresence mode="wait">
+                <motion.p
+                  key={loadingMessageIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.5 }}
+                  className="text-2xl text-white font-light mb-2"
+                >
+                  {loadingMessages[loadingMessageIndex]}
+                </motion.p>
+              </AnimatePresence>
+
+              <motion.div
+                className="flex justify-center gap-2 mt-6"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+              >
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    className="w-2 h-2 rounded-full bg-cyan-400"
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.3, 1, 0.3],
+                    }}
+                    transition={{
+                      duration: 1.5,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                  />
+                ))}
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
