@@ -4,6 +4,7 @@ import { Mail, BookOpen, Sparkles, Send, Eye, Share2, Heart, Clock, Star } from 
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase, LetterPublic } from '@/lib/supabase';
 
 export default function HomePage() {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
@@ -11,12 +12,32 @@ export default function HomePage() {
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [featuredLetters, setFeaturedLetters] = useState<LetterPublic[]>([]);
   const quoteText = '"I reply not to your words, but to your silence."';
 
   // Initialize client-side flag
   useEffect(() => {
     setIsClient(true);
+    loadFeaturedLetters();
   }, []);
+
+  // 加载精选展览
+  const loadFeaturedLetters = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('letters_public')
+        .select('*')
+        .order('views', { ascending: false })
+        .limit(4);
+
+      if (error) throw error;
+      if (data && data.length > 0) {
+        setFeaturedLetters(data);
+      }
+    } catch (error) {
+      console.error('Error loading featured letters:', error);
+    }
+  };
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -57,48 +78,62 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  const featuredExhibits = [
-    {
-      id: 1,
-      category: 'To a Lover',
-      preview: 'I wonder if you still think of that night under the cherry blossoms. The way the petals fell like snow, and how we promised forever...',
-      borderColor: '#EEC9B6',
-      borderClass: 'border-[#EEC9B6]/40',
-      views: 423,
-      hearts: 38,
-      daysAgo: 12
-    },
-    {
-      id: 2,
-      category: 'To Past Self',
-      preview: 'You were brave to leave. You were brave to stay. Both are true, and both versions of you deserved compassion and grace...',
-      borderColor: '#B0B9FF',
-      borderClass: 'border-[#B0B9FF]/40',
-      views: 567,
-      hearts: 52,
-      daysAgo: 8
-    },
-    {
-      id: 3,
-      category: 'To a Friend',
-      preview: 'Distance doesn\'t erase the years we shared. It only makes them clearer, like how you can see stars better when you\'re far from the city...',
-      borderColor: '#A9E6E3',
-      borderClass: 'border-[#A9E6E3]/40',
-      views: 312,
-      hearts: 29,
-      daysAgo: 15
-    },
-    {
-      id: 4,
-      category: 'To No One',
-      preview: 'Some words exist just to be written, not to be sent. They are prayers to the universe, confessions to the void that understands...',
-      borderColor: '#F1D29A',
-      borderClass: 'border-[#F1D29A]/40',
-      views: 189,
-      hearts: 21,
-      daysAgo: 6
-    }
-  ];
+  // 格式化收件人类型
+  const formatRecipientType = (type: string) => {
+    const formats: { [key: string]: string } = {
+      'lover': 'To a Lover',
+      'friend': 'To a Friend',
+      'parent': 'To a Parent',
+      'past-self': 'To Past Self',
+      'no-one': 'To No One',
+    };
+    return formats[type] || type;
+  };
+
+  // 获取边框颜色
+  const getBorderStyle = (type: string) => {
+    const styles: { [key: string]: { borderColor: string; borderClass: string } } = {
+      'lover': { borderColor: '#EEC9B6', borderClass: 'border-[#EEC9B6]/40' },
+      'friend': { borderColor: '#A9E6E3', borderClass: 'border-[#A9E6E3]/40' },
+      'parent': { borderColor: '#A7FF83', borderClass: 'border-[#A7FF83]/40' },
+      'past-self': { borderColor: '#B0B9FF', borderClass: 'border-[#B0B9FF]/40' },
+      'no-one': { borderColor: '#F1D29A', borderClass: 'border-[#F1D29A]/40' },
+    };
+    return styles[type] || styles['no-one'];
+  };
+
+  // 计算天数差
+  const getDaysAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  // 格式化展览数据
+  const formatFeaturedExhibits = () => {
+    return featuredLetters.map(letter => {
+      const borderStyle = getBorderStyle(letter.recipient_type);
+      const preview = letter.ai_reply.length > 150
+        ? letter.ai_reply.substring(0, 150) + '...'
+        : letter.ai_reply;
+
+      return {
+        id: letter.id,
+        exhibitNumber: letter.exhibit_number,
+        category: formatRecipientType(letter.recipient_type),
+        preview: preview,
+        borderColor: borderStyle.borderColor,
+        borderClass: borderStyle.borderClass,
+        views: letter.views || 0,
+        hearts: Math.floor((letter.views || 0) * 0.1), // 模拟点赞数
+        daysAgo: getDaysAgo(letter.created_at)
+      };
+    });
+  };
+
+  const displayExhibits = featuredLetters.length > 0 ? formatFeaturedExhibits() : [];
 
   const emotions = ['Love', 'Regret', 'Farewell', 'Past', 'Hope', 'Silence'];
 
@@ -731,7 +766,7 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-              {featuredExhibits.map((exhibit, index) => (
+              {displayExhibits.map((exhibit, index) => (
                 <Link key={exhibit.id} href={`/letters/${exhibit.id}`} className="h-full">
                   <motion.div
                     className={`group relative backdrop-blur-md rounded-2xl p-8 border-2 ${exhibit.borderClass} transition-all text-left overflow-hidden shadow-xl cursor-pointer h-full flex flex-col`}
@@ -762,7 +797,7 @@ export default function HomePage() {
                   <div className="relative flex-1 flex flex-col">
                     <div className="flex items-start justify-between mb-4">
                       <span className="text-xs text-gray-500 font-mono">
-                        Exhibit #{String(exhibit.id).padStart(5, '0')}
+                        Exhibit #{exhibit.exhibitNumber}
                       </span>
                       <span className="px-3 py-1 rounded-full text-xs border border-current text-gray-400 group-hover:text-[#4DA8FF] transition-colors">
                         {exhibit.category}
