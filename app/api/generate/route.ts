@@ -1,5 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+
+// 限流配置
+const RATE_LIMIT_CONFIG = {
+  maxRequests: parseInt(process.env.MAX_REQUESTS_PER_HOUR || '10'), // 每小时最多10次请求
+  windowMs: 60 * 60 * 1000, // 1小时
+  message: '您的请求过于频繁，请1小时后再试',
+};
 
 // AI Prompt templates based on recipient type
 const PROMPT_TEMPLATES = {
@@ -86,6 +94,27 @@ interface GenerateRequest {
 
 export async function POST(request: NextRequest) {
   try {
+    // 1. IP限流检查（第一道防线）
+    const clientIp = getClientIp(request);
+    const rateLimitResult = checkRateLimit(clientIp, RATE_LIMIT_CONFIG);
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: rateLimitResult.message,
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000 / 60), // 分钟数
+        },
+        {
+          status: 429, // Too Many Requests
+          headers: {
+            'X-RateLimit-Limit': RATE_LIMIT_CONFIG.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': new Date(rateLimitResult.resetTime).toISOString(),
+          }
+        }
+      );
+    }
+
     const body: GenerateRequest = await request.json();
     const { userText, recipientType } = body;
 
@@ -93,7 +122,7 @@ export async function POST(request: NextRequest) {
     const chineseCharCount = (userText.match(/[\u4e00-\u9fa5]/g) || []).length;
     const totalCharCount = userText.length;
 
-    // Validation
+    // 2. 基础验证
     if (!userText || !recipientType) {
       return NextResponse.json(
         { error: 'Missing required fields: userText and recipientType' },
@@ -108,11 +137,53 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (userText.length < 10 || userText.length > 5000) {
+    // 3. 内容长度验证（更严格）
+    const minLength = 10;
+    const maxLength = parseInt(process.env.MAX_TEXT_LENGTH || '2000'); // 默认2000字符，可配置
+
+    if (userText.length < minLength || userText.length > maxLength) {
       return NextResponse.json(
-        { error: 'Text must be between 10 and 5000 characters' },
+        { error: `内容长度必须在 ${minLength} 到 ${maxLength} 个字符之间` },
         { status: 400 }
       );
+    }
+
+    // 4. 内容质量检查（防止垃圾内容）
+    const trimmedText = userText.trim();
+
+    // 检查是否全是重复字符
+    const uniqueChars = new Set(trimmedText).size;
+    if (uniqueChars < 5) {
+      return NextResponse.json(
+        { error: '内容过于简单，请认真书写您的信件' },
+        { status: 400 }
+      );
+    }
+
+    // 检查是否包含过多重复词汇（简单的垃圾内容检测）
+    const words = trimmedText.split(/\s+/);
+    const wordSet = new Set(words);
+    if (words.length > 20 && wordSet.size / words.length < 0.3) {
+      return NextResponse.json(
+        { error: '内容重复过多，请认真书写您的信件' },
+        { status: 400 }
+      );
+    }
+
+    // 5. 恶意关键词过滤（可选，根据需要添加）
+    const bannedPatterns = [
+      /test+ing/i,
+      /spam/i,
+      /\b(fuck|shit)\b/i, // 根据需要添加更多
+    ];
+
+    for (const pattern of bannedPatterns) {
+      if (pattern.test(trimmedText)) {
+        return NextResponse.json(
+          { error: '内容包含不当词汇，请修改后重试' },
+          { status: 400 }
+        );
+      }
     }
 
     // Call OpenRouter API

@@ -1,8 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+
+// 提交展览墙的限流配置（比生成更宽松）
+const SUBMIT_RATE_LIMIT = {
+  maxRequests: parseInt(process.env.MAX_SUBMIT_PER_HOUR || '20'), // 每小时最多20次提交
+  windowMs: 60 * 60 * 1000, // 1小时
+  message: '提交过于频繁，请1小时后再试',
+};
 
 export async function POST(request: NextRequest) {
   try {
+    // IP限流检查
+    const clientIp = getClientIp(request);
+    const rateLimitResult = checkRateLimit(clientIp + ':submit', SUBMIT_RATE_LIMIT);
+
+    if (!rateLimitResult.allowed) {
+      return NextResponse.json(
+        {
+          error: rateLimitResult.message,
+          retryAfter: Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000 / 60),
+        },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const { letterId } = body;
 

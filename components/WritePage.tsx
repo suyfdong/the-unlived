@@ -54,6 +54,11 @@ export default function WritePage() {
       const data = await response.json();
 
       if (!response.ok) {
+        // 特殊处理限流错误
+        if (response.status === 429) {
+          const retryMinutes = data.retryAfter || 60;
+          throw new Error(`请求过于频繁，请 ${retryMinutes} 分钟后再试 🕐`);
+        }
         throw new Error(data.error || 'Failed to generate reply');
       }
 
