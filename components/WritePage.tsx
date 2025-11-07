@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Send, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import { sendGAEvent } from './GoogleAnalytics';
 
 // 沉浸式等待文案
 const loadingMessages = [
@@ -39,6 +40,12 @@ export default function WritePage() {
     setIsGenerating(true);
     setError('');
 
+    // 追踪：用户开始生成AI回信
+    sendGAEvent('generate_letter_start', {
+      recipient_type: recipient,
+      text_length: letterText.length,
+    });
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -57,10 +64,23 @@ export default function WritePage() {
         // 特殊处理限流错误
         if (response.status === 429) {
           const retryMinutes = data.retryAfter || 60;
+          // 追踪：触发限流
+          sendGAEvent('generate_letter_rate_limited', {
+            retry_after: retryMinutes,
+          });
           throw new Error(`请求过于频繁，请 ${retryMinutes} 分钟后再试 🕐`);
         }
+        // 追踪：生成失败
+        sendGAEvent('generate_letter_error', {
+          error_code: response.status,
+        });
         throw new Error(data.error || 'Failed to generate reply');
       }
+
+      // 追踪：生成成功
+      sendGAEvent('generate_letter_success', {
+        recipient_type: data.recipientType,
+      });
 
       // Store the result in sessionStorage to pass to result page
       sessionStorage.setItem('letterResult', JSON.stringify({

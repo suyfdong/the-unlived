@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import html2canvas from 'html2canvas';
 import { motion } from 'framer-motion';
+import { sendGAEvent } from './GoogleAnalytics';
 
 // 打字机动画组件
 function TypewriterText({ text, onComplete }: { text: string; onComplete?: () => void }) {
@@ -77,6 +78,11 @@ export default function ResultPage() {
       navigator.clipboard.writeText(letterData.aiReply);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+
+      // 追踪：复制文本
+      sendGAEvent('copy_letter_text', {
+        recipient_type: letterData.recipientType,
+      });
     }
   };
 
@@ -99,6 +105,11 @@ export default function ResultPage() {
           link.download = `letter-${exhibitNumber}.png`;
           link.click();
           URL.revokeObjectURL(url);
+
+          // 追踪：保存图片
+          sendGAEvent('save_letter_image', {
+            recipient_type: letterData?.recipientType,
+          });
         }
       });
     } catch (error) {
@@ -111,6 +122,12 @@ export default function ResultPage() {
     if (!letterData || hasSubmitted || isSubmitting) return;
 
     setIsSubmitting(true);
+
+    // 追踪：开始提交到展览
+    sendGAEvent('submit_to_exhibition_start', {
+      recipient_type: letterData.recipientType,
+    });
+
     try {
       const response = await fetch('/api/submit-to-exhibition', {
         method: 'POST',
@@ -132,8 +149,17 @@ export default function ResultPage() {
           setShowSubmitModal(false);
           return;
         }
+        // 追踪：提交失败
+        sendGAEvent('submit_to_exhibition_error', {
+          error_code: response.status,
+        });
         throw new Error(data.error || 'Failed to submit to exhibition');
       }
+
+      // 追踪：提交成功
+      sendGAEvent('submit_to_exhibition_success', {
+        recipient_type: letterData.recipientType,
+      });
 
       setHasSubmitted(true);
       setShowSubmitModal(false);

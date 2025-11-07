@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -58,6 +59,7 @@ export default function RootLayout({
 }) {
   // Replace with your actual AdSense client ID
   const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-9041836440635279';
+  const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -70,6 +72,10 @@ export default function RootLayout({
             crossOrigin="anonymous"
             strategy="afterInteractive"
           />
+        )}
+        {/* Google Analytics - Only loads in production when GA ID is set */}
+        {process.env.NODE_ENV === 'production' && gaId && (
+          <GoogleAnalytics measurementId={gaId} />
         )}
       </head>
       <body className="min-h-screen bg-black" suppressHydrationWarning>
