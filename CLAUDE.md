@@ -476,10 +476,36 @@ if (BLOCKED_IPS.includes(clientIp)) {
 
 ## 🎯 Future Roadmap (Not Yet Implemented)
 
-From [AI情绪博物馆.md](../AI情绪博物馆.md):
+### Product Expansion (From [AI情绪博物馆.md](../AI情绪博物馆.md))
 - **Phase 2**: Museum of Lost Days (upload photos → AI generates memory stories)
 - **Phase 3**: What If You Stayed (describe life choice → AI simulates parallel timeline)
-- **Google AdSense**: Monetization via content page ads (pending approval)
+
+### Monetization Roadmap
+- **Current**: Google AdSense (pending approval) - passive income via content page ads
+- **Phase 1 (3-6 months)**: Premium Letter Paper Skins 💌
+  - **Validation first**: Add analytics to track "Save Image" button click rate
+  - **Target metrics**: If click rate > 20% and retention > 3min, proceed to development
+  - **Features**:
+    - Beautiful letter paper templates (Vintage, Starry Night, Minimal, Watercolor, etc.)
+    - Handwritten font styles (English cursive, Chinese calligraphy)
+    - Real-time preview before download
+    - Pay-per-template or subscription model
+  - **Pricing strategy** (for international users):
+    - Single template: $0.99
+    - Template pack (5 designs): $2.99
+    - Premium membership: $4.99/month (unlimited access)
+  - **User scenario**: Users writing to deceased loved ones, ex-partners, or past selves have strong "keepsake ritual" needs
+  - **Technical approach**:
+    - Extend existing `html2canvas` export with CSS overlay layers
+    - Integrate Stripe/Lemon Squeezy for payment
+    - No impact on free experience (default paper remains beautiful)
+  - **Philosophy**: "Emotional keepsakes - pay to preserve your digital letter"
+  - **Risk mitigation**: Keep free version beautiful, only upsell gently on result page, never on creation flow
+
+- **Phase 2 (6-12 months)**: Physical Print Service 📮
+  - Partner with print-on-demand services
+  - Mail physical letter cards to users
+  - Pricing: $9.99/letter including worldwide shipping
 
 ---
 
