@@ -5,6 +5,7 @@ import { Search, Filter, Pin } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { supabase, LetterPublic } from '@/lib/supabase';
+import AdSenseAd from './AdSenseAd';
 
 // 为每张卡片生成随机的视觉属性(基于id保持一致性)
 const getCardStyle = (id: string) => {
@@ -454,6 +455,15 @@ export default function ExhibitionPage() {
               </motion.button>
             </div>
           )}
+
+          {/* AdSense Ad - Bottom of Exhibition Wall */}
+          <div className="max-w-4xl mx-auto mt-12">
+            <AdSenseAd
+              adSlot="YOUR_AD_SLOT_2"
+              adFormat="auto"
+              fullWidthResponsive={true}
+            />
+          </div>
         </>
         )}
 

@@ -1,19 +1,26 @@
-# The Unlived Project - 开发文档
+# CLAUDE.md
 
-> AI情绪博物馆 - 写下未寄出的信，收到AI的回复
-
-**项目地址**: https://github.com/suyfdong/the-unlived
-**最后更新**: 2024年11月
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ---
 
-## 📋 项目概述
+# The Unlived Project - Development Guide
 
-The Unlived Project 是一个基于AI的情感表达平台，用户可以：
-1. 写下从未寄出的信件（给恋人、朋友、父母、过去的自己等）
-2. 收到AI生成的温柔回复
-3. 选择性地将AI回复提交到公开展览墙
-4. **隐私保护**：原始信件永不公开，仅AI回复可被展示
+> AI Emotion Museum - Write unsent letters, receive AI replies
+
+**Live Site**: https://www.theunlived.art/
+**GitHub**: https://github.com/suyfdong/the-unlived
+**Last Updated**: November 2024
+
+---
+
+## 📋 Project Overview
+
+The Unlived Project is an AI-powered emotional expression platform where users:
+1. Write unsent letters (to lovers, friends, parents, past selves, or no one)
+2. Receive empathetic AI-generated replies
+3. Optionally submit AI replies to a public exhibition wall
+4. **Privacy-First**: Original letters are NEVER public; only AI-generated replies can be exhibited
 
 ---
 
@@ -155,26 +162,105 @@ MAX_TEXT_LENGTH=2000
 
 ---
 
-## 🚀 部署流程
+## 🛠️ Development Commands
 
-### 1. 推送到GitHub
 ```bash
-git add .
-git commit -m "message"
-git push origin main
+# Install dependencies
+npm install
+
+# Development server (with Turbopack)
+npm run dev
+# Access at http://localhost:3000
+
+# Production build
+npm run build
+
+# Production server
+npm start
+
+# Linting
+npm run lint
+
+# Database seeding (populate exhibition with sample data)
+npm run seed
 ```
 
-### 2. Vercel自动部署
-- 连接GitHub仓库
-- 设置环境变量
-- 自动部署
+---
 
-### 3. 验证
-- ✅ 访问首页
-- ✅ 测试写信功能
-- ✅ 测试限流（连续11次应被拒绝）
-- ✅ 检查sitemap.xml
-- ✅ 检查robots.txt
+## 🏛️ Architecture & Key Patterns
+
+### Data Flow: User Journey
+```
+Write Letter → AI Generation → Private Storage → Optional Publication → Exhibition Wall
+     ↓              ↓                ↓                    ↓                    ↓
+  WritePage    /api/generate   letters_private    /api/submit    letters_public
+```
+
+### Privacy Architecture (CRITICAL)
+- **Two-Table System**: `letters_private` (user+AI) vs `letters_public` (AI only)
+- **One-Way Flow**: Can publish private→public, but NEVER expose user text publicly
+- **No User Auth (MVP)**: Uses session storage for letter tracking
+
+### Rate Limiting System
+**Dual-Layer Protection** ([lib/rateLimit.ts](lib/rateLimit.ts:1)):
+1. **Hourly Limit**: 10 requests/hour (prevents burst attacks)
+2. **Daily Limit**: 20 requests/day (prevents sustained abuse)
+
+**Implementation**:
+- In-memory store (resets on server restart)
+- IP-based tracking via `x-forwarded-for` headers
+- Separate limits for `/api/generate` vs `/api/submit-to-exhibition`
+
+**Cost Impact**: Reduced abuse from potential 240 requests/day to 20 (92% savings)
+
+### AI Generation Pipeline
+**Location**: [app/api/generate/route.ts](app/api/generate/route.ts:1)
+
+**Flow**:
+```
+1. Rate limit check (IP-based)
+2. Content validation (length, quality, banned words)
+3. Language detection (CN/EN/JP/KR)
+4. Prompt selection (5 recipient types × 4 languages)
+5. OpenRouter API call (Claude 3.5 Sonnet)
+6. Save to letters_private
+7. Return letterId + aiReply
+```
+
+**Recipient-Specific Prompts** ([line 14-89](app/api/generate/route.ts#L14)):
+- `lover`: Tender, restrained, 2am intimacy
+- `friend`: Warm nostalgia, honest without harsh
+- `parent`: Complex, no justifications, soft
+- `past-self`: Time-blurred, gentle knowing
+- `no-one`: Dreamlike, cosmic void whispers
+
+**Critical Details**:
+- Temperature: 0.8 (creative but coherent)
+- Max tokens: 500 (~180 words)
+- 4-part structure: Shared feeling → Being with → Quiet realization → Soft close
+- Anti-patterns: No therapy speak, no "be kind to yourself", no AI self-reference
+
+---
+
+## 🚀 Deployment
+
+### Vercel Auto-Deploy
+1. Push to `main` branch on GitHub
+2. Vercel automatically builds and deploys
+3. Environment variables set in Vercel dashboard
+
+### Post-Deploy Verification
+```bash
+# Test homepage
+curl https://www.theunlived.art/
+
+# Test rate limiting (should fail on 11th request in 1 hour)
+for i in {1..11}; do curl -X POST https://www.theunlived.art/api/generate -d '{"userText":"test","recipientType":"lover"}'; done
+
+# Check SEO
+curl https://www.theunlived.art/sitemap.xml
+curl https://www.theunlived.art/robots.txt
+```
 
 ---
 
@@ -239,31 +325,116 @@ if (BLOCKED_IPS.includes(clientIp)) {
 
 ---
 
-## 📝 重要文件
+## 🎨 Key Features & Implementation
 
-```
-lib/rateLimit.ts              - 限流系统
-app/api/generate/route.ts     - AI生成API
-app/api/submit-to-exhibition/route.ts - 提交展览API
-components/ResultPage.tsx     - 打字机动画
-components/WritePage.tsx      - 沉浸式加载
-app/sitemap.ts                - SEO sitemap
-app/robots.ts                 - SEO robots
-ANTI_ABUSE.md                 - 防护详细文档
-RATE_LIMIT_UPDATE.md          - 双层限流说明
-```
+### 1. Typewriter Animation
+**Location**: [components/ResultPage.tsx](components/ResultPage.tsx:1)
+- Character-by-character reveal at 30ms/char
+- Blinking cursor effect
+- Immersive reading experience
+
+### 2. Immersive Loading States
+**Location**: [components/WritePage.tsx](components/WritePage.tsx:1)
+- Fullscreen overlay during AI generation
+- Rotating messages every 3 seconds
+- Examples: "Someone is writing back to you...", "Words are being chosen carefully..."
+
+### 3. Image Export
+**Technology**: html2canvas library
+- Export AI replies as 2x resolution images
+- Preserves letter paper aesthetic
+- Shareable on social media
+
+### 4. Exhibition Wall Pagination
+**Location**: [components/ExhibitionPage.tsx](components/ExhibitionPage.tsx:1)
+- 24 items per page
+- "Load More" button for progressive loading
+- View count tracking per exhibit
 
 ---
 
-## 🤝 贡献
+## 📝 Critical Files Reference
 
-- **开发**: Claude (Anthropic)
-- **产品**: susu
+| File | Purpose | Key Details |
+|------|---------|-------------|
+| [lib/rateLimit.ts](lib/rateLimit.ts:1) | Dual-layer rate limiting | In-memory IP tracking, hourly+daily limits |
+| [app/api/generate/route.ts](app/api/generate/route.ts:1) | AI generation endpoint | 5 prompt templates × 4 languages, OpenRouter integration |
+| [app/api/submit-to-exhibition/route.ts](app/api/submit-to-exhibition/route.ts:1) | Publish to exhibition | Creates public record, generates exhibit number |
+| [components/WritePage.tsx](components/WritePage.tsx:1) | Letter writing UI | Loading states, error handling, recipient selection |
+| [components/ResultPage.tsx](components/ResultPage.tsx:1) | AI reply display | Typewriter animation, image export, submit to exhibition |
+| [app/layout.tsx](app/layout.tsx:1) | Root layout | SEO metadata, hydration fix for browser extensions |
+| [ANTI_ABUSE.md](ANTI_ABUSE.md:1) | Abuse prevention docs | Detailed explanation of rate limiting strategy |
+
+---
+
+## 🔐 Database Schema (Supabase)
+
+### letters_private
+```sql
+- id (uuid, primary key)
+- user_text (text) - NEVER SHOWN PUBLICLY
+- ai_reply (text)
+- recipient_type (text)
+- is_public (boolean)
+- public_letter_id (uuid, nullable)
+- created_at (timestamp)
+```
+
+### letters_public
+```sql
+- id (uuid, primary key)
+- exhibit_number (text, unique) - Generated via RPC
+- ai_reply (text) - ONLY AI text
+- recipient_type (text)
+- views (integer)
+- private_letter_id (uuid)
+- created_at (timestamp)
+```
+
+**Critical RPC Function**: `generate_exhibit_number()` - Creates unique exhibit IDs
+
+---
+
+## 🚨 Common Pitfalls & Solutions
+
+### When modifying AI prompts:
+- ❌ DON'T add motivational language ("you deserve", "be kind to yourself")
+- ❌ DON'T make prompts too long (affects response quality)
+- ✅ DO maintain the 4-part structure (Shared feeling → Being → Realization → Soft close)
+- ✅ DO test with multiple languages (CN/EN/JP/KR)
+
+### When changing rate limits:
+- Check [lib/rateLimit.ts](lib/rateLimit.ts:1) for in-memory store implications
+- Update both hourly AND daily limits for consistency
+- Consider cost impact: Each request ≈ $0.05 via OpenRouter
+- Monitor 429 error rates in Vercel logs (should be <1%)
+
+### When adding new routes:
+- Add metadata for SEO in page files
+- Update [app/sitemap.ts](app/sitemap.ts:1) if route should be indexed
+- Consider if route needs rate limiting
+
+---
+
+## 🎯 Future Roadmap (Not Yet Implemented)
+
+From [AI情绪博物馆.md](../AI情绪博物馆.md):
+- **Phase 2**: Museum of Lost Days (upload photos → AI generates memory stories)
+- **Phase 3**: What If You Stayed (describe life choice → AI simulates parallel timeline)
+- **Google AdSense**: Monetization via content page ads (pending approval)
+
+---
+
+## 🤝 Contributors
+
+- **Product**: susu
+- **Development**: Claude (Anthropic)
 - **GitHub**: https://github.com/suyfdong/the-unlived
+- **Live Site**: https://www.theunlived.art/
 
 ---
 
-**版本**: v1.0.0 (MVP)
-**最后更新**: 2024年11月
+**Version**: v1.0.0 (MVP)
+**Last Updated**: November 2024
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)

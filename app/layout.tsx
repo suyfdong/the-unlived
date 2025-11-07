@@ -56,8 +56,22 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  // Replace with your actual AdSense client ID
+  const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-9041836440635279';
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Google AdSense Script - Only loads in production */}
+        {process.env.NODE_ENV === 'production' && (
+          <Script
+            async
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClientId}`}
+            crossOrigin="anonymous"
+            strategy="afterInteractive"
+          />
+        )}
+      </head>
       <body className="min-h-screen bg-black" suppressHydrationWarning>
         {children}
         <Script id="remove-extension-attributes" strategy="beforeInteractive">

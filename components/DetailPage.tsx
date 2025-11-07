@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowLeft, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase, LetterPublic } from '@/lib/supabase';
+import AdSenseAd from './AdSenseAd';
 
 interface DetailPageProps {
   id: string;
@@ -167,6 +168,13 @@ export default function DetailPage({ id }: DetailPageProps) {
             represents a moment of emotional honesty, transformed into art through artificial intelligence.
           </p>
         </div>
+
+        {/* AdSense Ad - Bottom of Letter Content */}
+        <AdSenseAd
+          adSlot="YOUR_AD_SLOT_1"
+          adFormat="auto"
+          fullWidthResponsive={true}
+        />
 
         {relatedLetters.length > 0 && (
           <div className="mb-8">
