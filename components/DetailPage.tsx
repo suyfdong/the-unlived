@@ -171,7 +171,7 @@ export default function DetailPage({ id }: DetailPageProps) {
 
         {/* AdSense Ad - Bottom of Letter Content */}
         <AdSenseAd
-          adSlot="YOUR_AD_SLOT_1"
+          adSlot="2424741566"
           adFormat="auto"
           fullWidthResponsive={true}
         />

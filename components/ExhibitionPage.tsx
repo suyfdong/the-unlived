@@ -459,7 +459,7 @@ export default function ExhibitionPage() {
           {/* AdSense Ad - Bottom of Exhibition Wall */}
           <div className="max-w-4xl mx-auto mt-12">
             <AdSenseAd
-              adSlot="YOUR_AD_SLOT_2"
+              adSlot="6413632624"
               adFormat="auto"
               fullWidthResponsive={true}
             />
