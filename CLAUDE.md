@@ -143,8 +143,33 @@ MAX_TEXT_LENGTH=2000
 - ✅ 动态Sitemap (`/sitemap.xml`)
 - ✅ Robots.txt (`/robots.txt`)
 
-### 需要创建
-- ⏳ `/public/og-image.png` (1200x630px)
+- ✅ OG Image (`/public/og-image.png` - 1200x630px)
+
+---
+
+## 💰 Google AdSense Integration
+
+### Configuration Status
+- ✅ Publisher ID: `pub-9041836440635279`
+- ✅ ads.txt deployed at `/public/ads.txt`
+- ✅ AdSense script integrated in `app/layout.tsx`
+- ✅ Ad components created (`components/AdSenseAd.tsx`)
+
+### Ad Placement Strategy (User Experience Optimized)
+**Ads ONLY on content consumption pages**:
+- ✅ Exhibition Detail Page (`/letters/[id]`) - After letter content (Ad Slot: 2424741566)
+- ✅ Exhibition Wall (`/exhibition`) - Below Load More button (Ad Slot: 6413632624)
+
+**NO ads on creation/interaction pages** (preserves immersive experience):
+- ❌ Homepage (/) - Maintains visual appeal
+- ❌ Write Page (/write) - No interruption during creation
+- ❌ Result Page (/result) - Protects typewriter animation experience
+
+### Implementation Details
+- Ad component location: [components/AdSenseAd.tsx](components/AdSenseAd.tsx:1)
+- Displays placeholder in development, real ads in production
+- Only loads after AdSense approval
+- See [ADSENSE_SETUP.md](ADSENSE_SETUP.md) for complete configuration guide
 
 ---
 
@@ -312,16 +337,18 @@ if (BLOCKED_IPS.includes(clientIp)) {
 - [x] 沉浸式加载
 - [x] 双层限流保护（降低92%成本风险）
 - [x] 内容验证过滤
-- [x] SEO优化
+- [x] SEO优化（Sitemap、Robots.txt、OG标签）
+- [x] OG图片（1200x630px）
 - [x] 首页动态精选
 - [x] 分页加载
 - [x] Vercel部署
+- [x] Google AdSense 集成（等待审核通过）
 
 ### 🔄 可选优化
-- [ ] Google AdSense
-- [ ] 移动端优化
+- [ ] 移动端深度优化
 - [ ] Redis持久化限流
 - [ ] Cloudflare CDN
+- [ ] Google Analytics
 
 ---
 
@@ -362,8 +389,11 @@ if (BLOCKED_IPS.includes(clientIp)) {
 | [app/api/submit-to-exhibition/route.ts](app/api/submit-to-exhibition/route.ts:1) | Publish to exhibition | Creates public record, generates exhibit number |
 | [components/WritePage.tsx](components/WritePage.tsx:1) | Letter writing UI | Loading states, error handling, recipient selection |
 | [components/ResultPage.tsx](components/ResultPage.tsx:1) | AI reply display | Typewriter animation, image export, submit to exhibition |
-| [app/layout.tsx](app/layout.tsx:1) | Root layout | SEO metadata, hydration fix for browser extensions |
+| [app/layout.tsx](app/layout.tsx:1) | Root layout | SEO metadata, AdSense script, hydration fix |
+| [components/AdSenseAd.tsx](components/AdSenseAd.tsx:1) | Ad display component | Shows ads in production, placeholders in dev |
 | [ANTI_ABUSE.md](ANTI_ABUSE.md:1) | Abuse prevention docs | Detailed explanation of rate limiting strategy |
+| [ADSENSE_SETUP.md](ADSENSE_SETUP.md:1) | AdSense configuration | Complete setup guide for Google AdSense |
+| [MVP_OPTIMIZATION.md](MVP_OPTIMIZATION.md:1) | Optimization roadmap | Prioritized improvements and best practices |
 
 ---
 
@@ -434,7 +464,16 @@ From [AI情绪博物馆.md](../AI情绪博物馆.md):
 
 ---
 
-**Version**: v1.0.0 (MVP)
-**Last Updated**: November 2024
+**Version**: v1.0.1 (MVP + AdSense)
+**Last Updated**: November 7, 2024
+
+---
+
+## 📚 Additional Documentation
+
+- [ADSENSE_SETUP.md](ADSENSE_SETUP.md) - Complete Google AdSense integration guide
+- [MVP_OPTIMIZATION.md](MVP_OPTIMIZATION.md) - Prioritized optimization roadmap
+- [ANTI_ABUSE.md](ANTI_ABUSE.md) - Detailed abuse prevention strategy
+- [AI情绪博物馆.md](../AI情绪博物馆.md) - Original product requirements (Chinese)
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
