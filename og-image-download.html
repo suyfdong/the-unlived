@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OG Image Generator - The Unlived Project</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .og-card {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #0B1120 0%, #0A1428 50%, #050A12 100%);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 光晕效果 */
+        .glow-1 {
+            position: absolute;
+            top: -200px;
+            left: 100px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .glow-2 {
+            position: absolute;
+            bottom: -200px;
+            right: 100px;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 179, 71, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(60px);
+        }
+
+        .content {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 80px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00D4FF 0%, #A7FF83 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 40px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .title {
+            font-size: 72px;
+            font-weight: 300;
+            background: linear-gradient(135deg, #00D4FF 0%, #A7FF83 30%, #FFB347 60%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 32px;
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 300;
+            line-height: 1.5;
+            max-width: 800px;
+        }
+
+        .badge {
+            position: absolute;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #00D4FF;
+            font-weight: 600;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
+        }
+
+        .instructions {
+            color: #fff;
+            text-align: center;
+            margin-top: 30px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            max-width: 1200px;
+        }
+
+        .instructions h2 {
+            margin-top: 0;
+            color: #00D4FF;
+            font-size: 28px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #00D4FF 0%, #A7FF83 100%);
+            color: #000;
+            border: none;
+            padding: 20px 50px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.4);
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 30px rgba(0, 212, 255, 0.6);
+        }
+
+        .download-btn:active {
+            transform: scale(0.95);
+        }
+
+        .status {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #A7FF83;
+            min-height: 24px;
+        }
+
+        .method-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border-left: 4px solid #00D4FF;
+        }
+
+        .method-section h3 {
+            margin-top: 0;
+            color: #FFB347;
+        }
+
+        code {
+            background: #000;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #00D4FF;
+            font-family: monospace;
+        }
+
+        ol {
+            text-align: left;
+            display: inline-block;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="og-card" id="og-card">
+            <div class="glow-1"></div>
+            <div class="glow-2"></div>
+
+            <div class="badge">✦ AI Emotional Museum ✦</div>
+
+            <div class="content">
+                <div class="logo">U</div>
+                <h1 class="title">The Unlived Project</h1>
+                <p class="subtitle">Write the words you never sent.<br/>Let AI reply what you'll never hear.</p>
+            </div>
+
+            <div class="footer">theunlived.art</div>
+        </div>
+
+        <div class="instructions">
+            <h2>📸 下载 OG 图片（1200x630px）</h2>
+
+            <button class="download-btn" onclick="downloadImage()">
+                ⬇️ 点击下载 og-image.png
+            </button>
+
+            <div class="status" id="status"></div>
+
+            <div class="method-section">
+                <h3>🎯 方法 1：一键下载（推荐）</h3>
+                <ol>
+                    <li>点击上面的 <strong>"点击下载"</strong> 按钮</li>
+                    <li>图片会自动下载为 <code>og-image.png</code></li>
+                    <li>将下载的图片移动到项目的 <code>public/</code> 文件夹</li>
+                </ol>
+            </div>
+
+            <div class="method-section">
+                <h3>🖥️ 方法 2：浏览器开发者工具（100% 精确）</h3>
+                <ol>
+                    <li>按 <code>Cmd + Option + I</code> 打开开发者工具</li>
+                    <li>按 <code>Cmd + Shift + M</code> 进入设备模拟模式</li>
+                    <li>在顶部设置尺寸：宽度 <code>1200</code>，高度 <code>630</code></li>
+                    <li>按 <code>Cmd + Shift + P</code> 打开命令面板</li>
+                    <li>输入 <code>screenshot</code>，选择 "Capture screenshot"</li>
+                    <li>重命名为 <code>og-image.png</code> 并放到 <code>public/</code> 文件夹</li>
+                </ol>
+            </div>
+
+            <div class="method-section">
+                <h3>📦 下载后执行</h3>
+                <p>将图片放到正确位置后，运行：</p>
+                <pre style="background: #000; padding: 15px; border-radius: 5px; text-align: left; overflow-x: auto;">
+cd "/Users/susu/idea/AI 情绪博物馆/the-unlived"
+git add public/og-image.png
+git commit -m "feat: add OG image for social sharing"
+git push origin main</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function downloadImage() {
+            const status = document.getElementById('status');
+            status.textContent = '⏳ 正在生成图片...';
+
+            const card = document.getElementById('og-card');
+
+            html2canvas(card, {
+                width: 1200,
+                height: 630,
+                scale: 2, // 2x 分辨率，更清晰
+                backgroundColor: null,
+                logging: false,
+                useCORS: true
+            }).then(canvas => {
+                // 转换为 PNG
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'og-image.png';
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+
+                    status.textContent = '✅ 下载成功！请将图片移动到 public/ 文件夹';
+
+                    setTimeout(() => {
+                        status.textContent = '';
+                    }, 5000);
+                }, 'image/png');
+            }).catch(error => {
+                console.error('Error:', error);
+                status.textContent = '❌ 下载失败，请使用方法 2（浏览器截图）';
+            });
+        }
+    </script>
+</body>
+</html>
