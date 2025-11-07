@@ -1057,13 +1057,23 @@ export default function HomePage() {
                     Privacy
                   </motion.div>
                 </Link>
-                <motion.div
-                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm cursor-pointer"
+                <Link href="/terms">
+                  <motion.div
+                    className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm"
+                    whileHover={{ y: -2, color: '#F1D29A' }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    Terms
+                  </motion.div>
+                </Link>
+                <motion.a
+                  href="mailto:hello@theunlived.art"
+                  className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm cursor-pointer inline-block"
                   whileHover={{ y: -2, color: '#F1D29A' }}
                   transition={{ duration: 0.4 }}
                 >
                   Contact
-                </motion.div>
+                </motion.a>
               </div>
             </div>
 

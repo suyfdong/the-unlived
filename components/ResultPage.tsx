@@ -55,6 +55,7 @@ export default function ResultPage() {
   const [exhibitNumber, setExhibitNumber] = useState('');
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [typingComplete, setTypingComplete] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
   const letterCardRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -242,9 +243,30 @@ export default function ResultPage() {
               Only the AI's reply will be publicly shown in the exhibition.
               Your original message remains private and will never be displayed.
             </p>
+
+            {/* Consent Checkbox */}
+            <label className="flex items-start gap-3 mb-6 cursor-pointer group">
+              <input
+                type="checkbox"
+                checked={consentChecked}
+                onChange={(e) => setConsentChecked(e.target.checked)}
+                className="mt-1 w-5 h-5 rounded border-gray-600 bg-gray-800 text-cyan-400 focus:ring-2 focus:ring-cyan-400 focus:ring-offset-0 cursor-pointer"
+              />
+              <span className="text-sm text-gray-300 leading-relaxed group-hover:text-gray-200 transition-colors">
+                I agree to publicly display this AI reply anonymously and grant The Unlived Project a non-exclusive, worldwide, royalty-free license to display, adapt, and distribute this content. See our{' '}
+                <a href="/terms" target="_blank" className="text-cyan-400 hover:text-cyan-300 underline">
+                  Terms of Use
+                </a>{' '}
+                for details.
+              </span>
+            </label>
+
             <div className="flex gap-3">
               <button
-                onClick={() => setShowSubmitModal(false)}
+                onClick={() => {
+                  setShowSubmitModal(false);
+                  setConsentChecked(false);
+                }}
                 disabled={isSubmitting}
                 className="flex-1 py-3 border border-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -252,8 +274,8 @@ export default function ResultPage() {
               </button>
               <button
                 onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="flex-1 py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-black rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all font-medium disabled:opacity-70 disabled:cursor-wait flex items-center justify-center gap-2"
+                disabled={isSubmitting || !consentChecked}
+                className="flex-1 py-3 bg-gradient-to-r from-cyan-400 to-blue-500 text-black rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all font-medium disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? (
                   <>

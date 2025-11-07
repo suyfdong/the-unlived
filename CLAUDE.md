@@ -173,6 +173,30 @@ MAX_TEXT_LENGTH=2000
 
 ---
 
+## 🔐 Legal & Compliance
+
+### Privacy & Terms (Effective: November 7, 2024)
+- ✅ Privacy Policy (`/privacy`) - GDPR/CCPA compliant
+  - Data collection disclosure
+  - Google AdSense cookie usage
+  - EU/EEA user rights
+  - Children's privacy (13+ requirement)
+  - Contact: hello@theunlived.art
+- ✅ Terms of Use (`/terms`) - Content licensing
+  - Service description and guidelines
+  - **Exhibition license grant** (non-exclusive, worldwide, royalty-free)
+  - Professional advice disclaimers
+  - Age restrictions (13+)
+
+### Consent Flow
+- ✅ **Exhibition submission requires explicit consent** ([components/ResultPage.tsx:248-262](components/ResultPage.tsx#L248))
+  - Checkbox must be checked before submission
+  - Links to Terms of Use for transparency
+  - Clear explanation of license grant
+  - Consent state resets on modal close
+
+---
+
 ## 📱 页面路由
 
 ```
@@ -182,7 +206,8 @@ MAX_TEXT_LENGTH=2000
 /exhibition        - 展览墙
 /letters/[id]      - 回信详情
 /about             - 关于
-/privacy           - 隐私政策
+/privacy           - 隐私政策 (新增)
+/terms             - 使用条款 (新增)
 ```
 
 ---
@@ -330,7 +355,7 @@ if (BLOCKED_IPS.includes(clientIp)) {
 
 ## 📊 开发进度
 
-### ✅ 已完成 (MVP)
+### ✅ 已完成 (MVP + Compliance)
 - [x] 核心功能（写信、AI回复、展览墙）
 - [x] 打字机动画
 - [x] 图片导出
@@ -343,6 +368,9 @@ if (BLOCKED_IPS.includes(clientIp)) {
 - [x] 分页加载
 - [x] Vercel部署
 - [x] Google AdSense 集成（等待审核通过）
+- [x] **隐私政策页面** (`/privacy`) - GDPR/CCPA合规
+- [x] **使用条款页面** (`/terms`) - 内容许可协议
+- [x] **展览提交同意流程** - 强制勾选同意框
 
 ### 🔄 可选优化
 - [ ] 移动端深度优化
@@ -464,7 +492,7 @@ From [AI情绪博物馆.md](../AI情绪博物馆.md):
 
 ---
 
-**Version**: v1.0.1 (MVP + AdSense)
+**Version**: v1.1.0 (MVP + AdSense + Compliance)
 **Last Updated**: November 7, 2024
 
 ---
