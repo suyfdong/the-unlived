@@ -13,6 +13,7 @@ export default function HomePage() {
   const [isMobile, setIsMobile] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [featuredLetters, setFeaturedLetters] = useState<LetterPublic[]>([]);
+  const [emailCopied, setEmailCopied] = useState(false);
   const quoteText = '"I reply not to your words, but to your silence."';
 
   // Initialize client-side flag
@@ -37,6 +38,13 @@ export default function HomePage() {
     } catch (error) {
       console.error('Error loading featured letters:', error);
     }
+  };
+
+  // 复制邮箱地址
+  const handleCopyEmail = () => {
+    navigator.clipboard.writeText('hello@theunlived.art');
+    setEmailCopied(true);
+    setTimeout(() => setEmailCopied(false), 2000);
   };
 
   const mouseX = useMotionValue(0);
@@ -974,7 +982,7 @@ export default function HomePage() {
 
             <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
               {[...Array(6)].map((_, i) => (
-                <Link key={i} href={`/letters/${10000 + i}`}>
+                <Link key={i} href="/exhibition">
                   <motion.div
                     className="flex-shrink-0 w-72 backdrop-blur-sm rounded-xl p-6 border border-[#4DA8FF]/20 hover:border-[#4DA8FF]/50 transition-all text-left group cursor-pointer"
                     style={{
@@ -1066,14 +1074,15 @@ export default function HomePage() {
                     Terms
                   </motion.div>
                 </Link>
-                <motion.a
-                  href="mailto:hello@theunlived.art"
+                <motion.button
+                  onClick={handleCopyEmail}
                   className="text-gray-400 hover:text-[#4DA8FF] transition-colors text-sm cursor-pointer inline-block"
                   whileHover={{ y: -2, color: '#F1D29A' }}
                   transition={{ duration: 0.4 }}
+                  title="点击复制邮箱地址"
                 >
-                  Contact
-                </motion.a>
+                  {emailCopied ? 'Email Copied!' : 'Contact'}
+                </motion.button>
               </div>
             </div>
 
