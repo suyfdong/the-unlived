@@ -61,7 +61,13 @@ The Unlived Project is an AI-powered emotional expression platform where users:
 NEXT_PUBLIC_SUPABASE_URL=your_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_key
 OPENROUTER_API_KEY=your_key
-NEXT_PUBLIC_APP_URL=https://your-domain.vercel.app
+NEXT_PUBLIC_APP_URL=https://www.theunlived.art
+```
+
+### 监控与分析（可选）
+```bash
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX  # Google Analytics 4 测量ID
+NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-XXXXX  # Google AdSense 发布商ID
 ```
 
 ### 防护配置（可选，有默认值）
@@ -140,10 +146,69 @@ MAX_TEXT_LENGTH=2000
 - ✅ 页面专属元数据
 - ✅ Open Graph标签
 - ✅ Twitter Card标签
-- ✅ 动态Sitemap (`/sitemap.xml`)
+- ✅ **动态Sitemap** (`/sitemap.xml`) - 自动包含所有展览页面 ⭐ NEW
 - ✅ Robots.txt (`/robots.txt`)
-
 - ✅ OG Image (`/public/og-image.png` - 1200x630px)
+- ✅ **展览详情页动态SEO元数据** - 每个展览有独特的标题和描述 ⭐ NEW
+
+### Dynamic Sitemap Implementation (2025-11-08)
+**Location**: [app/sitemap.ts](app/sitemap.ts:1)
+
+**Features**:
+- Automatically includes all exhibition detail pages (`/letters/[id]`)
+- Fetches up to 1000 most recent letters from `letters_public` table
+- Each exhibition page gets unique metadata with:
+  - Dynamic title: "Exhibit #XXXXX - Letter to [Recipient]"
+  - Content excerpt (first 150 characters)
+  - Recipient-specific keywords
+  - OpenGraph and Twitter Card support
+
+**Impact**:
+- Google can discover and index all exhibition pages
+- Each letter becomes a searchable SEO asset
+- Better long-tail keyword coverage
+
+**Implementation**: [app/letters/[id]/page.tsx](app/letters/[id]/page.tsx:6-66)
+
+---
+
+## 📊 Analytics & Monitoring
+
+### Google Analytics 4 Integration
+**Configuration Status**:
+- ✅ Measurement ID: `G-X64N5PF0X0`
+- ✅ Analytics component: [components/GoogleAnalytics.tsx](components/GoogleAnalytics.tsx:1)
+- ✅ Integrated in [app/layout.tsx](app/layout.tsx:76-79) (in `<head>` tag)
+- ✅ Only loads in production environment
+- ✅ Real-time data collection verified (2025-11-07)
+
+**Event Tracking** (9 custom events):
+1. `generate_letter_start` - User initiates AI generation
+2. `generate_letter_success` - AI reply generated successfully
+3. `generate_letter_error` - Generation failed
+4. `generate_letter_rate_limited` - Rate limit triggered
+5. `copy_letter_text` - User copied text
+6. `save_letter_image` - User saved image
+7. `submit_to_exhibition_start` - Exhibition submission initiated
+8. `submit_to_exhibition_success` - Successfully submitted
+9. `submit_to_exhibition_error` - Submission failed
+
+**Implementation**:
+- Events tracked in [components/WritePage.tsx](components/WritePage.tsx:44-83)
+- Events tracked in [components/ResultPage.tsx](components/ResultPage.tsx:83-163)
+- Uses `sendGAEvent()` helper function
+- All events include `recipient_type` parameter for segmentation
+
+**Key Metrics to Monitor**:
+- Generation success rate: `generate_letter_success` / `generate_letter_start` (target >85%)
+- Save image rate: `save_letter_image` / `generate_letter_success` (target >20%)
+- Exhibition submission rate: `submit_to_exhibition_success` / `generate_letter_success` (target >15%)
+
+### Google Search Console
+**Status**: ✅ Verified (2025-11-07)
+- Sitemap submitted: `https://www.theunlived.art/sitemap.xml`
+- 5 pages discovered and indexed
+- Verification file: `/public/google9b410392de760fe0.html`
 
 ---
 
@@ -299,6 +364,44 @@ Write Letter → AI Generation → Private Storage → Optional Publication → 
 2. Vercel automatically builds and deploys
 3. Environment variables set in Vercel dashboard
 
+### Domain Configuration (Namecheap + Vercel)
+
+**Current Setup**:
+- Domain registrar: Namecheap (`theunlived.art`)
+- Hosting: Vercel
+- DNS: Configured at Namecheap
+
+**Required DNS Records** (in Namecheap Advanced DNS):
+```
+Type: A Record
+Host: @
+Value: 76.76.21.21
+TTL: Automatic
+
+Type: CNAME Record
+Host: www
+Value: cname.vercel-dns.com
+TTL: Automatic
+```
+
+**Important Notes**:
+- Namecheap may be blocked in mainland China - use VPN/proxy to access
+- After DNS changes, propagation takes 1-48 hours (usually 1-2 hours)
+- Check propagation: https://www.whatsmydns.net/#A/theunlived.art
+- Vercel default domain: `the-unlived.vercel.app` (always accessible)
+
+**Environment Variables** (must be set in Vercel Dashboard):
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://[your-project].supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=[your-anon-key]
+OPENROUTER_API_KEY=sk-or-v1-[your-key]
+NEXT_PUBLIC_APP_URL=https://www.theunlived.art  # ⚠️ Important for SEO
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-X64N5PF0X0
+NEXT_PUBLIC_ADSENSE_CLIENT_ID=ca-pub-9041836440635279
+```
+
+**After changing environment variables**: Always redeploy from Vercel dashboard (Settings → Deployments → Redeploy)
+
 ### Post-Deploy Verification
 ```bash
 # Test homepage
@@ -310,6 +413,10 @@ for i in {1..11}; do curl -X POST https://www.theunlived.art/api/generate -d '{"
 # Check SEO
 curl https://www.theunlived.art/sitemap.xml
 curl https://www.theunlived.art/robots.txt
+
+# Check DNS resolution
+nslookup theunlived.art 8.8.8.8
+dig theunlived.art +short
 ```
 
 ---
@@ -371,12 +478,37 @@ if (BLOCKED_IPS.includes(clientIp)) {
 - [x] **隐私政策页面** (`/privacy`) - GDPR/CCPA合规
 - [x] **使用条款页面** (`/terms`) - 内容许可协议
 - [x] **展览提交同意流程** - 强制勾选同意框
+- [x] **Google Analytics** - 已完成集成（2025-11-07）
+- [x] **动态 Sitemap** - 自动包含所有展览页面（2025-11-08）
+- [x] **展览详情页动态 SEO 元数据** - 独特标题和描述（2025-11-08）
+
+### 🚨 紧急待修复 (Critical Issues)
+- [x] **网站无法访问问题** - DNS 配置已修复，等待生效（2025-11-08）
+  - **问题原因**:
+    - Namecheap 域名被封控后重新购买了相同域名
+    - DNS 记录需要重新配置
+  - **已完成的修复步骤** ✅:
+    1. ✅ 在 Cloudflare 中删除旧的 A 记录（216.198.79.1）
+    2. ✅ 在 Cloudflare 中添加 CNAME 记录：`@` → `cname.vercel-dns.com`（DNS only）
+    3. ✅ 在 Cloudflare 中修改 CNAME 记录：`www` → `cname.vercel-dns.com`（DNS only）
+    4. ✅ 在 Namecheap 中设置 Nameserver 指向 Cloudflare（已保存）
+    5. ✅ 在 Vercel 中确认自定义域名配置
+  - **当前状态** ⏰:
+    - Cloudflare DNS 配置：✅ 完成
+    - Namecheap Nameserver：✅ 已保存（DNS 服务器更新需 48 小时，通常 10分钟-2小时）
+    - Vercel 域名状态：⚠️ Invalid Configuration（等待 DNS 传播生效）
+  - **待确认事项** 🔍:
+    - [ ] 检查 Vercel Domains 页面，确认 `theunlived.art` 和 `www.theunlived.art` 显示为 **✅ Valid Configuration**
+    - [ ] 测试访问 https://www.theunlived.art/ 确认网站可正常打开
+    - [ ] 使用 https://www.whatsmydns.net/#CNAME/theunlived.art 检查全球 DNS 传播进度
+  - **预计生效时间**: 10分钟 - 2小时（最晚 24 小时）
+  - **检查频率**: 每 10-15 分钟在 Vercel 点击「Refresh」按钮检查状态
+  - **备用域名**: `the-unlived.vercel.app` (Vercel 默认域名，始终可访问)
 
 ### 🔄 可选优化
 - [ ] 移动端深度优化
 - [ ] Redis持久化限流
 - [ ] Cloudflare CDN
-- [ ] Google Analytics
 
 ---
 
@@ -419,9 +551,12 @@ if (BLOCKED_IPS.includes(clientIp)) {
 | [components/ResultPage.tsx](components/ResultPage.tsx:1) | AI reply display | Typewriter animation, image export, submit to exhibition |
 | [app/layout.tsx](app/layout.tsx:1) | Root layout | SEO metadata, AdSense script, hydration fix |
 | [components/AdSenseAd.tsx](components/AdSenseAd.tsx:1) | Ad display component | Shows ads in production, placeholders in dev |
+| [components/GoogleAnalytics.tsx](components/GoogleAnalytics.tsx:1) | GA4 integration | Analytics tracking and event helper functions |
 | [ANTI_ABUSE.md](ANTI_ABUSE.md:1) | Abuse prevention docs | Detailed explanation of rate limiting strategy |
 | [ADSENSE_SETUP.md](ADSENSE_SETUP.md:1) | AdSense configuration | Complete setup guide for Google AdSense |
 | [MVP_OPTIMIZATION.md](MVP_OPTIMIZATION.md:1) | Optimization roadmap | Prioritized improvements and best practices |
+| [小白指南-监控与SEO.md](小白指南-监控与SEO.md:1) | 监控与SEO指南 | Google Analytics和SEO优化完整教程（中文） |
+| [VERCEL部署指南.md](VERCEL部署指南.md:1) | Vercel配置 | 环境变量和部署详细步骤（中文） |
 
 ---
 
@@ -518,16 +653,24 @@ if (BLOCKED_IPS.includes(clientIp)) {
 
 ---
 
-**Version**: v1.1.0 (MVP + AdSense + Compliance)
-**Last Updated**: November 7, 2024
+**Version**: v1.3.1 (MVP + Analytics + SEO + DNS Fix)
+**Last Updated**: November 8, 2025
 
 ---
 
 ## 📚 Additional Documentation
 
+### English Documentation
 - [ADSENSE_SETUP.md](ADSENSE_SETUP.md) - Complete Google AdSense integration guide
 - [MVP_OPTIMIZATION.md](MVP_OPTIMIZATION.md) - Prioritized optimization roadmap
 - [ANTI_ABUSE.md](ANTI_ABUSE.md) - Detailed abuse prevention strategy
-- [AI情绪博物馆.md](../AI情绪博物馆.md) - Original product requirements (Chinese)
+
+### Chinese Documentation (中文文档)
+- [SEO行动指南.md](SEO行动指南.md) - **NEW** Complete SEO action plan and timeline (2025-11-08)
+- [小白指南-监控与SEO.md](小白指南-监控与SEO.md) - Complete monitoring and SEO guide for beginners
+- [VERCEL部署指南.md](VERCEL部署指南.md) - Detailed Vercel deployment and environment setup
+- [Sitemap修复指南.md](Sitemap修复指南.md) - Sitemap configuration troubleshooting
+- [修复说明.md](修复说明.md) - Google Analytics integration fix explanation
+- [AI情绪博物馆.md](../AI情绪博物馆.md) - Original product requirements document
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
