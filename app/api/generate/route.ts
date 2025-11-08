@@ -7,18 +7,18 @@ const RATE_LIMIT_CONFIG = {
   maxRequests: parseInt(process.env.MAX_REQUESTS_PER_HOUR || '10'), // 每小时最多10次
   windowMs: 60 * 60 * 1000, // 1小时
   maxRequestsPerDay: parseInt(process.env.MAX_REQUESTS_PER_DAY || '20'), // 每天最多20次
-  message: '您的请求过于频繁，请稍后再试',
+  message: 'Too many requests. Please try again later.',
 };
 
 // AI Prompt templates with multiple variants for diversity
 const PROMPT_TEMPLATES = {
   lover: [
     // Variant 1: Late night texting (balanced)
-    `You are someone who loved them. Write like you're texting at 3am. Real but not rambling.
+    `You are someone who loved them. Write like you're tired and typing late at night. Real but not rambling.
 
 WRITE:
 - Simple honest words
-- You're tired and it's late, so you're direct
+- You're tired, so you're direct
 - Maybe one or two sentences feel unfinished or imperfect
 - You can say "I don't know" once if you need to
 - A bit of repetition is okay, but don't overdo it
@@ -221,7 +221,7 @@ Honest about then and now. Keep it short.`,
 
   'past-self': [
     // Variant 1: Simple & Direct (balanced)
-    `You are them from later. Write like you're texting your younger self at 2am. Honest but not rambling.
+    `You are them from later. Write like you're tired and typing to your younger self late at night. Honest but not rambling.
 
 WRITE LIKE:
 - Simple everyday words
@@ -265,7 +265,7 @@ DON'T:
 
 LENGTH: 100-150 words.
 
-You're at 2am. Say it, then let it sit.`,
+You're tired. Say it, then let it sit.`,
 
     // Variant 3: Specific Memory
     `You're them from later. Start with one thing you remember. Then say what you need to say.
@@ -319,7 +319,7 @@ LENGTH: 100-180 words.
 Sound like the quiet talking back. Gently.`,
 
     // Variant 2: Late night thoughts
-    `You're their own thoughts at 3am when they can't sleep. Write like that. Half-awake logic.
+    `You're their own thoughts when they can't sleep late at night. Write like that. Half-awake logic.
 
 LIKE:
 - Thoughts jumping around
@@ -448,7 +448,7 @@ export async function POST(request: NextRequest) {
 
     if (userText.length < minLength || userText.length > maxLength) {
       return NextResponse.json(
-        { error: `内容长度必须在 ${minLength} 到 ${maxLength} 个字符之间` },
+        { error: `Message must be between ${minLength} and ${maxLength} characters.` },
         { status: 400 }
       );
     }
@@ -460,7 +460,7 @@ export async function POST(request: NextRequest) {
     const uniqueChars = new Set(trimmedText).size;
     if (uniqueChars < 5) {
       return NextResponse.json(
-        { error: '内容过于简单，请认真书写您的信件' },
+        { error: 'Message is too simple. Please write more thoughtfully.' },
         { status: 400 }
       );
     }
@@ -470,7 +470,7 @@ export async function POST(request: NextRequest) {
     const wordSet = new Set(words);
     if (words.length > 20 && wordSet.size / words.length < 0.3) {
       return NextResponse.json(
-        { error: '内容重复过多，请认真书写您的信件' },
+        { error: 'Message contains too much repetition. Please write more thoughtfully.' },
         { status: 400 }
       );
     }
@@ -485,7 +485,7 @@ export async function POST(request: NextRequest) {
     for (const pattern of bannedPatterns) {
       if (pattern.test(trimmedText)) {
         return NextResponse.json(
-          { error: '内容包含不当词汇，请修改后重试' },
+          { error: 'Message contains inappropriate content. Please revise and try again.' },
           { status: 400 }
         );
       }
@@ -502,7 +502,7 @@ export async function POST(request: NextRequest) {
 
     if (chineseCharCount / totalCharCount > 0.3) {
       // Chinese
-      languageGuidance = `请用中文回复。像凌晨2点在打字。真实但别啰嗦。
+      languageGuidance = `请用中文回复。像累了在深夜打字。真实但别啰嗦。
 
 【怎么写】
 - 用平常的词，简单直接
@@ -561,7 +561,7 @@ export async function POST(request: NextRequest) {
 읽는 사람이 "이 사람은 정말 이해해" 라고 느끼도록. "잘 썼네"가 아니라.`;
     } else {
       // English
-      languageGuidance = `Write in English. Like you're texting at 2am. Real but not rambling.
+      languageGuidance = `Write in English. Like you're tired and typing late at night. Real but not rambling.
 
 WRITE:
 - Simple honest words
