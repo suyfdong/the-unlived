@@ -27,20 +27,24 @@ export default function AdSenseAd({
   fullWidthResponsive = true,
   style = { display: 'block' }
 }: AdSenseAdProps) {
+  // 判断是否是生产环境（检查域名而不是NODE_ENV）
+  const isProduction = typeof window !== 'undefined' &&
+    (window.location.hostname === 'www.theunlived.art' ||
+     window.location.hostname === 'theunlived.art');
+
   useEffect(() => {
-    try {
-      // @ts-ignore
-      if (window.adsbygoogle && process.env.NODE_ENV === 'production') {
+    if (isProduction) {
+      try {
         // @ts-ignore
         (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (error) {
+        console.error('AdSense error:', error);
       }
-    } catch (error) {
-      console.error('AdSense error:', error);
     }
-  }, []);
+  }, [isProduction]);
 
-  // Don't show ads in development
-  if (process.env.NODE_ENV !== 'production') {
+  // Don't show ads in development (localhost)
+  if (!isProduction) {
     return (
       <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center">
         <p className="text-gray-400 text-sm">
