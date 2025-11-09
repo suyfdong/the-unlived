@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Live Site**: https://www.theunlived.art/
 **GitHub**: https://github.com/suyfdong/the-unlived
-**Last Updated**: November 8, 2024
+**Last Updated**: November 9, 2025
 
 ---
 
@@ -37,6 +37,36 @@ The Unlived Project is an AI-powered emotional expression platform where users:
 - **Supabase** (PostgreSQL数据库)
 - **OpenRouter API** (Claude 3.5 Sonnet)
 - **Vercel** (部署平台)
+
+---
+
+## 🛠️ Development Commands
+
+```bash
+# Install dependencies
+npm install
+
+# Development server (with Turbopack)
+npm run dev
+# Access at http://localhost:3000
+
+# Production build
+npm run build
+
+# Production server (after build)
+npm start
+
+# Linting
+npm run lint
+
+# Database seeding (populate exhibition with sample data)
+npm run seed
+```
+
+**Important Notes:**
+- Turbopack is enabled by default in Next.js 16
+- `.env.local` file is required for local development (never commit this file)
+- Seed script adds multilingual exhibition entries to Supabase
 
 ---
 
@@ -86,7 +116,7 @@ MAX_TEXT_LENGTH=2000
 
 ## 🛡️ 防滥用保护系统
 
-### 内容安全审核（⭐ 2024-11-09 新增）
+### 内容安全审核（⭐ 2025-11-09 新增）
 
 **双层审核机制**：
 1. **用户输入审核** - 在AI生成前检查用户信件内容
@@ -276,7 +306,7 @@ MAX_TEXT_LENGTH=2000
 
 ## 🔐 Legal & Compliance
 
-### Privacy & Terms (Effective: November 7, 2024)
+### Privacy & Terms (Effective: November 7, 2025)
 - ✅ Privacy Policy (`/privacy`) - GDPR/CCPA compliant
   - Data collection disclosure
   - Google AdSense cookie usage
@@ -859,11 +889,11 @@ if (BLOCKED_IPS.includes(clientIp)) {
 ---
 
 **Version**: v1.6.0 (MVP + Analytics + SEO + Mobile Optimization + Views Tracking + Favicon + Content Moderation)
-**Last Updated**: November 9, 2024
+**Last Updated**: November 9, 2025
 
 ---
 
-## 🚀 开发日志 - 2024年11月9日（下午）
+## 🚀 开发日志 - 2025年11月9日（下午）
 
 ### 🛡️ 内容安全审核系统上线
 
@@ -872,7 +902,7 @@ if (BLOCKED_IPS.includes(clientIp)) {
 
 - ✅ **OpenAI Moderation API 集成**（免费）
   - 检测：self-harm, violence, sexual, hate, harassment
-  - 模型：`omni-moderation-latest` (2024最新)
+  - 模型：`omni-moderation-latest` (2025最新)
   - Fail-open 设计：API不可用时继续处理
 
 - ✅ **多语言关键词黑名单**
@@ -923,7 +953,7 @@ Commit: 1f91791
 
 ---
 
-## 🚀 开发日志 - 2024年11月9日（上午）
+## 🚀 开发日志 - 2025年11月9日（上午）
 
 ### 完成的功能和修复
 
