@@ -2,8 +2,8 @@ import Navigation from '@/components/Navigation'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy',
-  description: 'Privacy Policy for The Unlived Project - How we handle your data and protect your privacy.',
+  title: 'Privacy Policy - The Unlived Project',
+  description: 'Privacy Policy for The Unlived Project - How we handle your data, cookies, Google Analytics, and Google AdSense. GDPR and CCPA compliant.',
 }
 
 export default function PrivacyPage() {
@@ -16,7 +16,7 @@ export default function PrivacyPage() {
 
           <div className="max-w-none">
             <p className="text-gray-400 mb-8">
-              <strong>Effective Date:</strong> November 7, 2024
+              <strong>Effective Date:</strong> November 9, 2024
             </p>
 
             <p className="text-gray-300 leading-relaxed mb-6">
@@ -38,6 +38,14 @@ export default function PrivacyPage() {
                   <strong>Technical data:</strong> Basic logs for security and performance (e.g., IP address (short-lived),
                   timestamps, user agent, browser type).
                 </li>
+                <li>
+                  <strong>Analytics data (via Google Analytics):</strong> Anonymized usage statistics including page views,
+                  session duration, traffic sources, device information, and approximate geographic location.
+                </li>
+                <li>
+                  <strong>Advertising data (via Google AdSense):</strong> Cookie-based data for ad personalization and
+                  performance measurement, managed by Google and its advertising partners.
+                </li>
               </ul>
             </section>
 
@@ -52,35 +60,117 @@ export default function PrivacyPage() {
             </section>
 
             <section className="mb-10">
-              <h2 className="text-2xl font-serif text-white mb-4">Cookies & Advertising</h2>
-              <p className="text-gray-300 leading-relaxed mb-4">
-                We use <strong>Google AdSense</strong> to display advertisements on certain pages. Google and its
-                partners may use cookies to serve ads based on your prior visits to our website or other websites.
+              <h2 className="text-2xl font-serif text-white mb-4">Cookies & Tracking Technologies</h2>
+
+              <p className="text-gray-300 leading-relaxed mb-6">
+                We use cookies and similar tracking technologies to improve your experience and analyze site usage.
+                Below are the types of cookies we use:
               </p>
-              <ul className="text-gray-300 space-y-3 list-disc pl-6">
-                <li>
-                  You can opt out of personalized advertising by visiting{' '}
+
+              <div className="mb-6">
+                <h3 className="text-xl font-serif text-white mb-3">Essential Cookies</h3>
+                <p className="text-gray-300 leading-relaxed">
+                  These cookies are necessary for the website to function properly. They enable basic features
+                  like security, rate limiting, and session management.
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-xl font-serif text-white mb-3">Analytics Cookies</h3>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  We use <strong>Google Analytics</strong> to understand how visitors interact with our website.
+                  Google Analytics collects information such as:
+                </p>
+                <ul className="text-gray-300 space-y-2 list-disc pl-6 mb-4">
+                  <li>Pages you visit and time spent on each page</li>
+                  <li>How you arrived at our site (search engine, referral link, direct visit)</li>
+                  <li>Device type, browser type, and operating system</li>
+                  <li>Approximate geographic location (country/city level, based on anonymized IP address)</li>
+                  <li>User interactions (button clicks, form submissions)</li>
+                </ul>
+                <p className="text-gray-300 leading-relaxed">
+                  <strong>Important:</strong> Google Analytics data is anonymized and aggregated. We do not use it
+                  to identify individual users. You can opt out of Google Analytics by installing the{' '}
                   <a
-                    href="https://www.google.com/settings/ads"
+                    href="https://tools.google.com/dlpage/gaoptout"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-cyan-400 hover:text-cyan-300 underline"
                   >
-                    Google Ads Settings
+                    Google Analytics Opt-out Browser Add-on
                   </a>.
-                </li>
-                <li>
-                  Learn more about Google's privacy practices at{' '}
-                  <a
-                    href="https://policies.google.com/privacy"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 underline"
-                  >
-                    Google Privacy Policy
-                  </a>.
-                </li>
-              </ul>
+                </p>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-xl font-serif text-white mb-3">Advertising Cookies</h3>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  We use <strong>Google AdSense</strong> to display advertisements on certain pages
+                  (Exhibition Wall and Letter Detail pages). Google and its partners use cookies to:
+                </p>
+                <ul className="text-gray-300 space-y-2 list-disc pl-6 mb-4">
+                  <li>Serve ads based on your prior visits to our website or other websites</li>
+                  <li>Personalize ad content based on your interests</li>
+                  <li>Measure ad performance and prevent ad fraud</li>
+                  <li>Build audience profiles for targeted advertising</li>
+                </ul>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  <strong>Your Advertising Choices:</strong>
+                </p>
+                <ul className="text-gray-300 space-y-2 list-disc pl-6">
+                  <li>
+                    Opt out of personalized advertising:{' '}
+                    <a
+                      href="https://www.google.com/settings/ads"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:text-cyan-300 underline"
+                    >
+                      Google Ads Settings
+                    </a>
+                  </li>
+                  <li>
+                    Opt out of third-party cookies:{' '}
+                    <a
+                      href="https://optout.aboutads.info/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:text-cyan-300 underline"
+                    >
+                      Digital Advertising Alliance Opt-Out
+                    </a>
+                  </li>
+                  <li>
+                    EU users can visit:{' '}
+                    <a
+                      href="https://www.youronlinechoices.eu/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:text-cyan-300 underline"
+                    >
+                      Your Online Choices
+                    </a>
+                  </li>
+                  <li>
+                    Learn more:{' '}
+                    <a
+                      href="https://policies.google.com/technologies/ads"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-cyan-400 hover:text-cyan-300 underline"
+                    >
+                      How Google uses advertising cookies
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-gray-800/50 rounded-lg p-4 mt-6">
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  <strong>Note:</strong> If you choose to disable cookies, some features of our website may not
+                  function properly. You can manage cookies through your browser settings.
+                </p>
+              </div>
             </section>
 
             <section className="mb-10">
@@ -164,7 +254,7 @@ export default function PrivacyPage() {
 
           <div className="mt-12 pt-8 border-t border-gray-800">
             <p className="text-gray-500 text-sm text-center">
-              Last updated: November 7, 2024
+              Last updated: November 9, 2024
             </p>
           </div>
         </div>

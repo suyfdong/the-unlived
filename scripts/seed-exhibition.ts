@@ -149,6 +149,141 @@ const seedLetters = [
     ai_reply: '我知道你尽力了。在那个年代,能养大我们已经很不容易。没有多余的钱,没有多余的时间,更没有多余的耐心。\n\n但我还是会想,如果你能多抱抱我,多说几句"我爱你",会不会不一样。\n\n现在我也当了父母,才明白你当时有多累。才明白爱不一定要说出口,它藏在每一顿饭里,每一次接送里,每一个你咬牙坚持的瞬间里。\n\n我懂了。虽然有点晚。\n\n谢谢你。',
     views: Math.floor(Math.random() * 500) + 200,
   },
+  {
+    recipient_type: 'parent',
+    ai_reply: '你总说我不懂你的苦心。你说的对,我确实不懂。\n\n我不懂为什么爱要用那么重的方式表达,为什么期望要变成压力,为什么关心要裹着控制。\n\n但我也知道,你是真的爱我。只是你的爱,和我需要的爱,好像永远对不上。\n\n现在我们都老了。我已经不再期待你会改变,你大概也放弃了改变我。\n\n就这样吧。各自安好。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Spanish - To a Lover
+  {
+    recipient_type: 'lover',
+    ai_reply: 'Todavía recuerdo esa noche en la playa, cuando dijiste que el sonido del mar te hacía sentir pequeña. Te abracé y no dije nada. Porque yo también me sentía pequeño.\n\nDespués de tantos años, sigo escuchando las olas y pensando en ti. En cómo nos quedamos hasta el amanecer, descalzos en la arena, hablando de futuros que nunca llegaron.\n\nA veces me pregunto si tú también piensas en mí cuando oyes el mar.\n\nProbablemente no.\n\nPero está bien.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+  {
+    recipient_type: 'lover',
+    ai_reply: 'Encontré tu foto entre mis libros viejos. No recuerdo haberla puesto ahí, pero ahí estaba. Sonriendo como si nada malo fuera a pasar.\n\nQué inocentes éramos.\n\nGuardé la foto de nuevo. No porque quiera olvidarte, sino porque ya no duele tanto como antes. Y eso, de alguna manera, se siente como una traición.\n\nComo si olvidar el dolor significara olvidarte a ti.\n\nPero la vida sigue. Ambos lo sabemos.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Spanish - To a Friend
+  {
+    recipient_type: 'friend',
+    ai_reply: 'Pasé por tu casa el otro día. Bueno, no es tu casa ya. Alguien más vive ahí ahora. Pintaron la puerta de azul.\n\nRecuerdo cuando nos quedábamos despiertos toda la noche en tu habitación, haciendo planes que sonaban imposibles pero que creíamos totalmente posibles.\n\nMirarnos ahora, en ciudades diferentes, vidas diferentes. No estoy triste. Solo... nostálgico.\n\nEspero que estés bien, amigo. Espero que algunos de esos sueños se hayan hecho realidad.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Spanish - To Past Self
+  {
+    recipient_type: 'past-self',
+    ai_reply: 'Sé que ahora todo parece imposible. Sé que te sientes perdido, como si cada decisión fuera la equivocada.\n\nQuiero decirte que todo mejora, pero estaría mintiendo. Algunas cosas mejoran. Otras empeoran. La mayoría simplemente... cambia.\n\nLo que sí puedo decirte es que sobrevives. No de la manera que esperabas, no con todas las piezas intactas, pero sobrevives.\n\nY eso cuenta para algo.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Spanish - To No One
+  {
+    recipient_type: 'no-one',
+    ai_reply: 'A veces las palabras más honestas son las que nunca decimos en voz alta. Las que escribimos en notas que luego borramos. Las que pensamos a las 3 de la mañana cuando el mundo duerme.\n\nEstas palabras son tuyas y de nadie más. No necesitan ser entendidas. No necesitan respuesta.\n\nSolo necesitan existir.\n\nY el vacío las acepta. Sin juzgar. Sin preguntar.\n\nSin cambiar nada.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // More Japanese - To Past Self
+  {
+    recipient_type: 'past-self',
+    ai_reply: '今のきみが心配していること、10年後には忘れてる。いや、忘れたふりをしてるだけかもしれない。\n\nあの時もっと勇気を出せばよかったって、今でも思う。でも、もし勇気を出していたら、今の自分はいない。\n\nこれが良かったのか悪かったのか、まだ分からない。\n\n多分、一生分からないと思う。\n\nでも、それでいいんだ。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+  {
+    recipient_type: 'past-self',
+    ai_reply: 'あの頃のきみに教えてあげたい。失敗を恐れて何もしないことが、一番の失敗だって。\n\n今の僕は、あの時きみが選ばなかった道を想像することがある。どんな人生だっただろうって。\n\n答えは出ない。出るはずもない。\n\nでも一つだけ分かることがある。今の僕は、あの時のきみよりは、少しだけ強い。\n\nそれだけで十分だと思う。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // More Japanese - To No One
+  {
+    recipient_type: 'no-one',
+    ai_reply: '誰にも言えない言葉がある。言ったら消えてしまいそうな、儚い感情。\n\n虚空に向かって話すとき、不思議と楽になる。答えが返ってこないから。理解されなくていいから。\n\nただ、そこに存在していればいい。\n\n夜空に浮かぶ星みたいに。遠くて、小さくて、でも確かにそこにある。\n\nそれでいい。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Japanese - To Parent
+  {
+    recipient_type: 'parent',
+    ai_reply: 'もっと話せばよかった。もっとちゃんと、気持ちを伝えればよかった。\n\nでも僕たち、そういう家族じゃなかったから。「ありがとう」も「ごめん」も「愛してる」も、言葉にしない家族だった。\n\n今さら言っても遅いけど、僕はちゃんと分かってる。あなたが僕のためにしてくれたこと、全部。\n\n言葉にはしなかったけど、ちゃんと伝わってたと思いたい。\n\nありがとう。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // More Korean - To a Lover
+  {
+    recipient_type: 'lover',
+    ai_reply: '우리가 마지막으로 만난 날, 비가 왔었지. 우산 하나에 같이 들어가면서, 네가 웃었던 거 기억해.\n\n그때 알았어야 했는데. 그게 마지막 웃음이 될 줄.\n\n지금도 비 오는 날이면 너 생각나. 우산 없이 그냥 맞고 걸을 때도 있어. 그때 그 기분 느끼고 싶어서.\n\n바보 같지?\n\n근데 괜찮아. 너를 기억하는 방법이니까.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // More Korean - To a Friend
+  {
+    recipient_type: 'friend',
+    ai_reply: '어제 우리 단골이었던 치킨집 앞 지나갔어. 아직 있더라. 우리 자리도 그대로고.\n\n앉아서 혼자 맥주 한 잔 했어. 네가 옆에 없으니까 이상하더라. 대화 소리로 가득했던 그 자리가, 너무 조용했어.\n\n연락할까 했는데, 뭐라고 말해야 할지 모르겠더라. "보고 싶어"? 너무 무겁잖아.\n\n그래서 그냥 혼자 마시고 왔어.\n\n다음엔 진짜 연락할게.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Korean - To No One
+  {
+    recipient_type: 'no-one',
+    ai_reply: '아무에게도 하지 못한 말들이 쌓여서, 가슴 한쪽이 무거워. \n\n말해봤자 달라질 것도 없고, 이해받을 수도 없을 것 같아서. 그냥 여기, 아무도 없는 곳에 남겨둘게.\n\n누군가 읽을지도 모르지만, 그게 누군지는 모를 거야. \n\n그래서 편해.\n\n익명의 공간에서, 익명의 마음을 토해내는 거.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Traditional Chinese - To Past Self
+  {
+    recipient_type: 'past-self',
+    ai_reply: '那時候的你,總覺得人生有標準答案。好好讀書、找份穩定工作、按部就班地生活。\n\n後來才發現,人生根本沒有標準答案。每個選擇都是對的,也都是錯的。端看你怎麼看待它。\n\n現在的我,過得沒有比較好,也沒有比較差。就是不一樣了。\n\n如果能回去告訴你一句話,我會說:別那麼害怕。反正最後都會走到該去的地方。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+  {
+    recipient_type: 'past-self',
+    ai_reply: '你現在正在經歷的痛苦,會過去的。不是因為時間治癒了一切,而是因為你會習慣。\n\n習慣一個人。習慣失望。習慣那些得不到的東西。\n\n這聽起來很悲觀,但其實沒有。因為習慣了之後,你會發現自己比想像中堅強。\n\n會發現,原來沒有誰是非要不可的。\n\n包括那個讓你痛苦的人。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Traditional Chinese - To No One
+  {
+    recipient_type: 'no-one',
+    ai_reply: '有些話,不是說給別人聽的。是說給自己聽的。或者,說給虛空聽的。\n\n虛空不會回應,不會安慰,不會告訴你「一切都會好的」。它只是靜靜地接受你所有的情緒。\n\n有時候,這樣就夠了。\n\n不需要被理解,不需要被拯救。\n\n只需要有個地方,可以誠實地做自己。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // Traditional Chinese - To Parent
+  {
+    recipient_type: 'parent',
+    ai_reply: '我一直想問你,你後悔嗎?後悔生下我,後悔把人生綁在這個家庭裡。\n\n但我從來沒問出口。因為我怕答案。\n\n現在我長大了,有了自己的生活。我們見面變少了,電話也變短了。你說這樣也好,各自過各自的。\n\n但我知道你不是真的這麼想。\n\n我也不是。\n\n只是我們都不知道,怎麼說出口。',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // More English variations - To Parent
+  {
+    recipient_type: 'parent',
+    ai_reply: 'I know you did your best. That phrase gets thrown around a lot, but I mean it. You worked two jobs. You showed up to every school event, exhausted but there. You pretended everything was fine even when it wasn\'t.\n\nI see that now. Took me thirty years, but I see it.\n\nWe never said "I love you" much in our family. That wasn\'t our way. But love was there. In the packed lunches. In the way you waited up. In the sacrifices you never mentioned.\n\nI wish I\'d said thank you more.\n\nThank you.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+  {
+    recipient_type: 'parent',
+    ai_reply: 'You always said I\'d understand when I got older. When I had kids of my own. And I hated hearing that.\n\nBut you were right. I get it now. The impossible choices. The guilt. The exhaustion. The way love and resentment can exist in the same moment.\n\nI\'m not saying everything was okay. Some things still hurt. But I understand now why you made the choices you did.\n\nAnd I forgive you.\n\nI hope you can forgive me too.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+
+  // More English - To No One (different tones)
+  {
+    recipient_type: 'no-one',
+    ai_reply: 'There are things I\'ve never told anyone. Not because they\'re terrible secrets, but because they\'re too mundane to matter. Too small to share. Too personal to explain.\n\nLike how I sometimes sit in my car for ten minutes after getting home, just to have a moment alone. Or how I rehearse conversations that will never happen. Or how some days I feel like I\'m playing a character in my own life.\n\nNobody needs to know these things.\n\nBut it feels good to say them anyway.\n\nEven if it\'s just to the void.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
+  {
+    recipient_type: 'no-one',
+    ai_reply: 'If I could tell someone the truth—the real truth—I\'d say I\'m tired. Not sleepy tired. Soul tired. The kind that rest doesn\'t fix.\n\nTired of pretending everything is fine. Tired of being strong. Tired of having to have it all figured out.\n\nBut I won\'t say this to anyone real. Because they\'ll try to fix it. Or worse, they\'ll worry.\n\nSo I say it here. To you. To no one.\n\nAnd somehow that helps.',
+    views: Math.floor(Math.random() * 500) + 200,
+  },
 ];
 
 async function seedExhibition() {
