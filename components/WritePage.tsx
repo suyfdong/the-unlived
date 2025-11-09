@@ -15,6 +15,48 @@ const loadingMessages = [
   "Words are being chosen carefully...",
 ];
 
+// 动态 Placeholder - 涵盖正负情绪
+const placeholders: { [key: string]: string[] } = {
+  lover: [
+    "I never told you that...",
+    "You broke me when...",
+    "I wish you knew...",
+    "You never deserved...",
+    "The truth is...",
+    "I'm done pretending that..."
+  ],
+  parent: [
+    "I need you to know that...",
+    "You hurt me when you...",
+    "Why did you always...",
+    "I'm tired of carrying...",
+    "I wish you had...",
+    "Maybe you didn't realize..."
+  ],
+  'past-self': [
+    "I wish I could tell you...",
+    "I hate that you...",
+    "You didn't know it then, but...",
+    "I forgive you for...",
+    "Why the fuck did you..."
+  ],
+  friend: [
+    "I miss the way we...",
+    "You left before I could...",
+    "I never understood why you...",
+    "You hurt me when...",
+    "Do you even remember..."
+  ],
+  'no-one': [
+    "I just need to say this out loud...",
+    "Nobody knows that...",
+    "I'm so tired of...",
+    "Why does everything feel...",
+    "Fuck it, here's the truth...",
+    "I don't even know what I'm..."
+  ]
+};
+
 export default function WritePage() {
   const router = useRouter();
   const [letterText, setLetterText] = useState('');
@@ -22,6 +64,18 @@ export default function WritePage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState('');
   const [loadingMessageIndex, setLoadingMessageIndex] = useState(0);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState('Write the words you never sent...');
+
+  // 根据收信人类型更新 placeholder
+  useEffect(() => {
+    if (recipient && placeholders[recipient]) {
+      const options = placeholders[recipient];
+      const randomIndex = Math.floor(Math.random() * options.length);
+      setCurrentPlaceholder(options[randomIndex]);
+    } else {
+      setCurrentPlaceholder('Write the words you never sent...');
+    }
+  }, [recipient]);
 
   // 轮换加载文案
   useEffect(() => {
@@ -107,7 +161,18 @@ export default function WritePage() {
           <h1 className="text-4xl md:text-5xl font-light text-white mb-4">
             Write Your Unsent Letter
           </h1>
-          <p className="text-gray-400 text-lg">
+
+          {/* 鼓励文案 */}
+          <div className="max-w-2xl mx-auto mb-6">
+            <p className="text-gray-300 text-lg font-light italic mb-2">
+              Don't overthink it. Write like no one's reading.
+            </p>
+            <p className="text-gray-500 text-sm">
+              (Because they're not. This is just for you.)
+            </p>
+          </div>
+
+          <p className="text-gray-400 text-sm">
             Your words remain private forever. Only the AI's reply can be shared.
           </p>
         </div>
@@ -135,11 +200,16 @@ export default function WritePage() {
               <textarea
                 value={letterText}
                 onChange={(e) => setLetterText(e.target.value)}
-                placeholder="Write the words you never sent..."
-                className="w-full bg-gray-800 text-white rounded-xl px-4 py-4 border border-gray-700 focus:border-cyan-400 focus:outline-none transition-colors min-h-[300px] resize-none font-light leading-relaxed"
+                placeholder={currentPlaceholder}
+                className="w-full bg-gray-800 text-white rounded-xl px-4 py-4 border border-gray-700 focus:border-cyan-400 focus:outline-none transition-colors min-h-[300px] resize-none font-light leading-relaxed placeholder:text-gray-500 placeholder:italic"
               />
-              <div className="mt-2 text-xs text-gray-500 text-right">
-                {letterText.length} characters
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className="text-gray-500 italic">
+                  10 words or 1000 words. Both are enough.
+                </span>
+                <span className="text-gray-500">
+                  {letterText.length} characters
+                </span>
               </div>
             </div>
 

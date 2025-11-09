@@ -197,6 +197,8 @@ export default function ExhibitionPage() {
 
   useEffect(() => {
     setIsMounted(true);
+    // 页面加载时强制滚动到顶部
+    window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
@@ -270,14 +272,14 @@ export default function ExhibitionPage() {
       {/* 顶部装饰线 */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
 
-      <div className="max-w-[1800px] mx-auto px-8 py-12">
+      <div className="max-w-[1800px] mx-auto px-4 md:px-8 pt-40 md:pt-24 pb-12">
         {/* 标题区域 */}
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-8 md:mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <h1 className="text-5xl font-serif text-amber-100 mb-3">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif text-amber-100 mb-3">
             Exhibition Wall
           </h1>
           <p className="text-slate-400 text-lg">
@@ -356,7 +358,7 @@ export default function ExhibitionPage() {
                 >
                   <Link href={`/letters/${exhibit.id}`}>
                     <motion.div
-                      className={`relative ${paperColor.bg} ${paperColor.border} ${paperStyle.border} ${paperStyle.type === 'torn-paper' ? '' : 'rounded-lg'} p-6 ${paperStyle.shadow} ${paperColor.shadow} cursor-pointer ${paperStyle.extraClass || ''}`}
+                      className={`relative ${paperColor.bg} ${paperColor.border} ${paperStyle.border} ${paperStyle.type === 'torn-paper' ? '' : 'rounded-lg'} p-4 md:p-6 ${paperStyle.shadow} ${paperColor.shadow} cursor-pointer ${paperStyle.extraClass || ''}`}
                       whileHover={{
                         scale: 1.05,
                         rotate: isMounted ? cardStyle.rotation * 0.5 : 0,
@@ -398,9 +400,9 @@ export default function ExhibitionPage() {
                         <div className="absolute inset-4 pointer-events-none border border-dashed border-orange-400/30 rounded-md" />
                       )}
 
-                      {/* 信件内容 */}
+                      {/* 信件内容 - 移动端显示更少 */}
                       <div className="relative">
-                        <p className="text-slate-700 text-sm leading-relaxed line-clamp-8 whitespace-pre-wrap font-light">
+                        <p className="text-slate-700 text-sm leading-relaxed line-clamp-4 md:line-clamp-6 lg:line-clamp-8 whitespace-pre-wrap font-light">
                           {exhibit.ai_reply}
                         </p>
 
@@ -439,9 +441,20 @@ export default function ExhibitionPage() {
             })}
           </div>
 
+          {/* AdSense Ad - Before Load More */}
+          {hasMore && (
+            <div className="max-w-4xl mx-auto mt-12">
+              <AdSenseAd
+                adSlot="6413632624"
+                adFormat="auto"
+                fullWidthResponsive={true}
+              />
+            </div>
+          )}
+
           {/* Load More 按钮 */}
           {hasMore && (
-            <div className="text-center mt-12 mb-8">
+            <div className="text-center mt-8 mb-8">
               <motion.button
                 onClick={loadMore}
                 className="px-8 py-3 bg-amber-500/20 hover:bg-amber-500/30 border-2 border-amber-500/50 text-amber-100 rounded-full font-medium transition-all"
@@ -456,14 +469,6 @@ export default function ExhibitionPage() {
             </div>
           )}
 
-          {/* AdSense Ad - Bottom of Exhibition Wall */}
-          <div className="max-w-4xl mx-auto mt-12">
-            <AdSenseAd
-              adSlot="6413632624"
-              adFormat="auto"
-              fullWidthResponsive={true}
-            />
-          </div>
         </>
         )}
 

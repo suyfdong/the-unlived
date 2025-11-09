@@ -62,13 +62,27 @@ export default function DetailPage({ id }: DetailPageProps) {
       setLetter(letterData);
       setIsLoading(false); // 立即显示主要内容
 
-      // 异步增加浏览次数（不阻塞渲染）
-      Promise.resolve(
-        supabase
-          .from('letters_public')
-          .update({ views: (letterData.views || 0) + 1 })
-          .eq('id', id)
-      ).catch(console.error);
+      // 异步增加浏览次数（通过API路由，不阻塞渲染）
+      fetch('/api/increment-views', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ letterId: id }),
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            console.log('Views updated successfully. New count:', data.views);
+            // 可选：更新本地状态以显示最新的views（不刷新页面）
+            setLetter(prev => prev ? { ...prev, views: data.views } : prev);
+          } else {
+            console.error('Failed to update views:', data.error);
+          }
+        })
+        .catch(error => {
+          console.error('Failed to increment views:', error);
+        });
 
       // 异步加载相关信件（不阻塞渲染）
       Promise.resolve(
@@ -169,12 +183,14 @@ export default function DetailPage({ id }: DetailPageProps) {
           </p>
         </div>
 
-        {/* AdSense Ad - Bottom of Letter Content */}
-        <AdSenseAd
-          adSlot="2424741566"
-          adFormat="auto"
-          fullWidthResponsive={true}
-        />
+        {/* AdSense Ad - Before Related Letters */}
+        <div className="mb-12">
+          <AdSenseAd
+            adSlot="2424741566"
+            adFormat="auto"
+            fullWidthResponsive={true}
+          />
+        </div>
 
         {relatedLetters.length > 0 && (
           <div className="mb-8">

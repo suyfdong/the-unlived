@@ -8,8 +8,8 @@ export const metadata: Metadata = {
     default: 'The Unlived Project - AI Emotion Museum',
     template: '%s | The Unlived Project',
   },
-  description: 'Write the words you never sent. Let AI reply what you\'ll never hear. An anonymous space for unsent letters and emotional closure.',
-  keywords: ['unsent letters', 'AI emotion', 'emotional museum', 'closure', 'anonymous writing', 'AI reply', 'emotional healing'],
+  description: 'To the one who\'s gone. To the version of you that died somewhere along the way. Write what you never said. Hear what you\'ll never hear. This is where unfinished stories find an ending.',
+  keywords: ['unsent letters', 'emotional closure', 'grief support', 'AI therapy', 'write to deceased', 'letter to ex', 'anonymous confession', 'emotional healing', 'closure letter', 'forgiveness letter', 'goodbye letter', 'regret', 'past self', 'emotional museum', 'AI reply', 'therapeutic writing'],
   authors: [{ name: 'The Unlived Project' }],
   creator: 'The Unlived Project',
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     locale: 'en_US',
     url: '/',
     title: 'The Unlived Project - AI Emotion Museum',
-    description: 'Write the words you never sent. Let AI reply what you\'ll never hear.',
+    description: 'To the one who\'s gone. To the version of you that died somewhere along the way. Write what you never said. Hear what you\'ll never hear.',
     siteName: 'The Unlived Project',
     images: [
       {
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'The Unlived Project - AI Emotion Museum',
-    description: 'Write the words you never sent. Let AI reply what you\'ll never hear.',
+    description: 'To the one who\'s gone. To the version of you that died somewhere along the way. Write what you never said. Hear what you\'ll never hear.',
     images: ['/og-image.png'],
   },
   robots: {

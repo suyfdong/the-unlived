@@ -73,6 +73,9 @@ export async function POST(request: NextRequest) {
 
     const exhibitNumber = exhibitNumberData;
 
+    // 生成随机初始浏览数（3-50之间）
+    const randomInitialViews = Math.floor(Math.random() * (50 - 3 + 1)) + 3;
+
     // 4. Create public letter
     const { data: publicLetter, error: insertError } = await supabase
       .from('letters_public')
@@ -81,7 +84,7 @@ export async function POST(request: NextRequest) {
         ai_reply: privateLetter.ai_reply,
         recipient_type: privateLetter.recipient_type,
         private_letter_id: privateLetter.id,
-        views: 0,
+        views: randomInitialViews,
       })
       .select()
       .single();

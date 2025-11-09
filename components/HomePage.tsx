@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'fram
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase, LetterPublic } from '@/lib/supabase';
+import AdSenseAd from './AdSenseAd';
 
 export default function HomePage() {
   const [hoveredStep, setHoveredStep] = useState<number | null>(null);
@@ -20,6 +21,8 @@ export default function HomePage() {
   useEffect(() => {
     setIsClient(true);
     loadFeaturedLetters();
+    // 页面加载时强制滚动到顶部
+    window.scrollTo(0, 0);
   }, []);
 
   // 加载精选展览
@@ -444,18 +447,22 @@ export default function HomePage() {
               The Unlived Project
             </motion.h1>
 
-            <motion.p
-              className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto font-light leading-relaxed mb-12"
+            <motion.div
+              className="max-w-2xl mx-auto mb-12"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6, duration: 0.8 }}
             >
-              Write the words you never sent.<br />
-              Let AI reply what you'll never hear.
-            </motion.p>
+              <p className="text-xl md:text-2xl text-gray-300 font-light leading-relaxed mb-3 italic">
+                For the words that got stuck in your throat.
+              </p>
+              <p className="text-xl md:text-2xl text-gray-300 font-light leading-relaxed italic">
+                For the version of you that's gone.
+              </p>
+            </motion.div>
 
             <motion.div
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-12"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9, duration: 0.8 }}
@@ -838,6 +845,23 @@ export default function HomePage() {
               </Link>
               ))}
             </div>
+          </div>
+        </motion.section>
+
+        {/* AdSense Ad - After Featured Letters */}
+        <motion.section
+          className="py-12 px-6"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <div className="max-w-4xl mx-auto">
+            <AdSenseAd
+              adSlot="6413632624"
+              adFormat="auto"
+              fullWidthResponsive={true}
+            />
           </div>
         </motion.section>
 

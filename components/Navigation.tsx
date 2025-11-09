@@ -1,13 +1,15 @@
 'use client';
 
-import { Menu } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Navigation() {
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -16,6 +18,13 @@ export default function Navigation() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 关闭移动端菜单并滚动到顶部
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+    // 滚动到页面顶部
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -64,15 +73,76 @@ export default function Navigation() {
 
           <Link
             href="/write"
-            className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all hover:scale-105"
+            className="hidden md:block bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-6 py-2 rounded-full text-sm font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all hover:scale-105"
           >
             Write a Letter
           </Link>
 
-          <button className="md:hidden text-white">
-            <Menu size={24} />
+          {/* 移动端菜单按钮 */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden text-white hover:text-cyan-400 transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
+
+        {/* 移动端下拉菜单 */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden overflow-hidden border-t border-cyan-400/20 mt-4 bg-black"
+            >
+              <div className="py-4 space-y-3 bg-black">
+                <Link
+                  href="/"
+                  onClick={closeMobileMenu}
+                  className={`block px-4 py-3 rounded-lg transition-colors ${
+                    pathname === '/'
+                      ? 'bg-cyan-400/10 text-cyan-400'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  }`}
+                >
+                  Home
+                </Link>
+                <Link
+                  href="/exhibition"
+                  onClick={closeMobileMenu}
+                  className={`block px-4 py-3 rounded-lg transition-colors ${
+                    pathname === '/exhibition'
+                      ? 'bg-cyan-400/10 text-cyan-400'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  }`}
+                >
+                  Exhibition
+                </Link>
+                <Link
+                  href="/about"
+                  onClick={closeMobileMenu}
+                  className={`block px-4 py-3 rounded-lg transition-colors ${
+                    pathname === '/about'
+                      ? 'bg-cyan-400/10 text-cyan-400'
+                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                  }`}
+                >
+                  About
+                </Link>
+                <Link
+                  href="/write"
+                  onClick={closeMobileMenu}
+                  className="block bg-gradient-to-r from-cyan-400 to-blue-500 text-black px-4 py-3 rounded-lg text-center font-medium hover:shadow-lg hover:shadow-cyan-500/50 transition-all"
+                >
+                  Write a Letter
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );
