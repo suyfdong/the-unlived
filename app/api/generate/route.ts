@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import { moderateContent } from '@/lib/moderation';
 
 // 双层限流配置
 const RATE_LIMIT_CONFIG = {
@@ -475,20 +476,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. 恶意关键词过滤（可选，根据需要添加）
-    const bannedPatterns = [
-      /test+ing/i,
-      /spam/i,
-      /\b(fuck|shit)\b/i, // 根据需要添加更多
-    ];
+    // 5. 内容安全审核（OpenAI Moderation API + 关键词过滤）
+    const moderationResult = await moderateContent(trimmedText);
 
-    for (const pattern of bannedPatterns) {
-      if (pattern.test(trimmedText)) {
-        return NextResponse.json(
-          { error: 'Message contains inappropriate content. Please revise and try again.' },
-          { status: 400 }
-        );
-      }
+    if (!moderationResult.safe) {
+      console.log(`⚠️ Content moderation failed for IP ${clientIp}:`, moderationResult.reason);
+      return NextResponse.json(
+        { error: 'Your message contains inappropriate content. Please revise and try again.' },
+        { status: 400 }
+      );
     }
 
     // Call OpenRouter API with dynamic prompt
@@ -623,6 +619,20 @@ Make them feel "this sounds like them" not "this is well-written."`;
 
     if (!aiReply) {
       throw new Error('No response generated from AI');
+    }
+
+    // 6. 审核AI生成的回复（第二层防护）
+    const aiModerationResult = await moderateContent(aiReply);
+
+    if (!aiModerationResult.safe) {
+      console.log(`⚠️ AI-generated content flagged for IP ${clientIp}:`, aiModerationResult.reason);
+      console.log('Flagged AI reply:', aiReply.substring(0, 200)); // Log first 200 chars for debugging
+
+      // 不保存这条内容，提示用户重新尝试
+      return NextResponse.json(
+        { error: 'Unable to generate appropriate response. Please try rephrasing your message.' },
+        { status: 500 }
+      );
     }
 
     // Save to database (letters_private)
