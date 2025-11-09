@@ -5,6 +5,7 @@ import { ArrowLeft, Share2 } from 'lucide-react';
 import Link from 'next/link';
 import { supabase, LetterPublic } from '@/lib/supabase';
 import AdSenseAd from './AdSenseAd';
+import Footer from './Footer';
 
 interface DetailPageProps {
   id: string;
@@ -231,6 +232,9 @@ export default function DetailPage({ id }: DetailPageProps) {
           </Link>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

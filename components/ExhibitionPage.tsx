@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { supabase, LetterPublic } from '@/lib/supabase';
 import AdSenseAd from './AdSenseAd';
+import Footer from './Footer';
 
 // 为每张卡片生成随机的视觉属性(基于id保持一致性)
 const getCardStyle = (id: string) => {
@@ -481,6 +482,9 @@ export default function ExhibitionPage() {
           </div>
         )}
       </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

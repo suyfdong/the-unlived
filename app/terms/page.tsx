@@ -16,7 +16,7 @@ export default function TermsPage() {
 
           <div className="max-w-none">
             <p className="text-gray-400 mb-8">
-              <strong>Effective Date:</strong> November 7, 2024
+              <strong>Effective Date:</strong> November 7, 2025
             </p>
 
             <p className="text-gray-300 leading-relaxed mb-6">
@@ -165,7 +165,7 @@ export default function TermsPage() {
 
           <div className="mt-12 pt-8 border-t border-gray-800">
             <p className="text-gray-500 text-sm text-center">
-              Last updated: November 7, 2024
+              Last updated: November 7, 2025
             </p>
           </div>
         </div>

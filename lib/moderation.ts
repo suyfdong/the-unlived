@@ -65,7 +65,7 @@ export async function checkContentSafety(text: string): Promise<ContentCheckResu
       },
       body: JSON.stringify({
         input: text,
-        model: 'omni-moderation-latest', // Use latest model (updated 2024)
+        model: 'omni-moderation-latest', // Use latest model (updated 2025)
       }),
     });
 

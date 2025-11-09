@@ -1125,7 +1125,7 @@ export default function HomePage() {
                 Where unspoken words find their echo.
               </motion.p>
               <p className="text-gray-500 text-xs">
-                © 2024 The Unlived Project. Every unsent word deserves to be heard.
+                © 2025 The Unlived Project. Every unsent word deserves to be heard.
               </p>
             </div>
           </div>
